@@ -1,4 +1,5 @@
 # 로컬 전용 설정 파일 무시
+src/main/resources/application.properties
 src/main/resources/application-local.properties
 
 HELP.md
@@ -38,7 +39,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-# src/main/resources 폴더 내 특정 파일 무시
-src/main/resources/application.properties
-src/main/resources/application-local.properties
