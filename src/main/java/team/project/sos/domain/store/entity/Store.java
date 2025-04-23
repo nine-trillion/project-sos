@@ -3,6 +3,8 @@ package team.project.sos.domain.store.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import team.project.sos.common.config.BaseTimeEntity;
 import team.project.sos.domain.store.enums.StoreStatus;
 import team.project.sos.domain.user.entity.User;
@@ -13,6 +15,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "store")
+@SQLDelete(sql = "update store set status = 'CLOSED' where id = ?") // 가게 삭제 시 폐업 처리
+@SQLRestriction("status = 'OPERATING'") // 영업 중인 가게만 조회
 public class Store extends BaseTimeEntity {
 
     @Id
@@ -36,25 +40,16 @@ public class Store extends BaseTimeEntity {
     private StoreStatus status;
 
     @Column(nullable = false)
-    private String notice = "";
+    private String notice;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    public void operate() {
-        this.status = StoreStatus.OPERATING;
-    }
-
-    public void shutDown() {
-        this.status = StoreStatus.CLOSED;
-    }
-
-    public boolean isOperating() {
-        return this.status == StoreStatus.OPERATING;
-    }
-
-    public void updateNotice(String notice) {
+    public void updateStoreInfo(String name, LocalTime openTime, LocalTime closeTime, String notice) {
+        this.name = name;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
         this.notice = notice;
     }
 
@@ -64,5 +59,7 @@ public class Store extends BaseTimeEntity {
         this.closeTime = closeTime;
         this.minOrderPrice = minOrderPrice;
         this.owner = owner;
+        this.status = StoreStatus.OPERATING;
+        this.notice = "";
     }
 }
