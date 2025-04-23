@@ -1,7 +1,14 @@
 package team.project.sos.domain.order.service;
 
-import org.springframework.stereotype.Service;
+import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
+import team.project.sos.domain.order.dto.response.OrderResponseDto;
 
-@Service
-public class OrderService {
+public interface OrderService {
+
+    void saveOrder(CreateOrderRequestDto requestDto);
+
+    void cancelOrder(Long orderId, Long userId);
+
+    OrderResponseDto findOrder(Long orderId, Long userId);
+
 }

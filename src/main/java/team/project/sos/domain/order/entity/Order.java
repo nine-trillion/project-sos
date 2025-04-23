@@ -5,8 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.order.enums.OrderStatus;
+import team.project.sos.domain.order.exception.OrderError;
+import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.user.entity.User;
 
@@ -41,6 +45,21 @@ public class Order {
 
     private LocalDateTime requestedAt;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public void cancel() {
+        // 이미 취소된 주문
+        if (this.status == OrderStatus.CANCELLED) {
+            throw new OrderException(OrderError.ALREADY_CANCELLED);
+        }
+
+        // 이미 조리가 시작되거나 완료된 주문
+        if (this.status == OrderStatus.COOKING || this.status == OrderStatus.COMPLETED) {
+            throw new OrderException(OrderError.ALREADY_COOKING);
+        }
+
+        this.status = OrderStatus.CANCELLED;
+    }
 
 }
