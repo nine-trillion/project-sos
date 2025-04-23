@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import team.project.sos.domain.order.entity.Order;
-import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.user.entity.User;
 
 @Entity
@@ -24,9 +23,9 @@ public class Review {
     private User user;
 
     //한 개의 가게에 리뷰 여러개
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "store_id")
+//    private Store store;
 
     @OneToOne
     @JoinColumn(name = "order_id")
