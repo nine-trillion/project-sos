@@ -2,8 +2,7 @@ package team.project.sos.domain.store.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import team.project.sos.domain.menu.dto.response.MenuResponse;
-import team.project.sos.domain.menu.dto.response.MenuResponse;
+import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 
 import java.util.List;
 
@@ -12,5 +11,5 @@ import java.util.List;
 public class StoreDetailResponse {
 
     private final StoreSaveResponse store;
-    private final List<MenuResponse> menus;
+    private final List<MenuResponseDto> menus;
 }
