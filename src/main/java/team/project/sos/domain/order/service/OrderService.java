@@ -1,68 +1,14 @@
 package team.project.sos.domain.order.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
-import team.project.sos.domain.order.entity.Order;
-import team.project.sos.domain.order.exception.OrderError;
-import team.project.sos.domain.order.exception.OrderException;
-import team.project.sos.domain.order.repository.OrderRepository;
-import team.project.sos.domain.user.entity.User;
 
-import java.util.List;
-import java.util.stream.Collectors;
+public interface OrderService {
 
-@Service
-@RequiredArgsConstructor
-public class OrderService {
+    void saveOrder(CreateOrderRequestDto requestDto);
 
-    private final OrderRepository orderRepository;
-    private final UserService userService;
+    void cancelOrder(Long orderId, Long userId);
 
-    public void saveOrder(CreateOrderRequestDto requestDto) {
-        // 주문 엔티티 생성
-        Order order = Order.builder()
-                .user(requestDto.getUser())
-                .store(requestDto.getStore())
-                .menu(requestDto.getMenu())
-                .status(requestDto.getStatus())
-                .price(requestDto.getPrice())
-                .requestedAt(requestDto.getRequestedAt())
-                .build();
-
-        // 주문 저장
-        orderRepository.save(order);
-    }
-
-    @Transactional
-    public void cancelOrder(Long orderId, Long userId) {
-        // 해당하는 주문 조회
-        Order order = findByIdOrElseThrow(orderId);
-
-        // 현재 로그인한 유저의 주문이어야만 취소 가능
-        if (!order.getUser().getId().equals(userId)) {
-            throw new OrderException(OrderError.NO_PERMISSION);
-        }
-
-        // 주문 상태를 '취소'로 변경
-        order.cancel();
-    }
-
-    public List<OrderResponseDto> findOrders(Long userId) {
-        // 해당하는 유저 조회
-        User user = userService.findByIdOrElseThrow(userId);
-
-        // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
-        return orderRepository.findByUser(user)
-                .stream()
-                .map(OrderResponseDto::from)
-                .collect(Collectors.toList());
-    }
-
-    public Order findByIdOrElseThrow(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
-    }
+    OrderResponseDto findOrder(Long orderId, Long userId);
 
 }

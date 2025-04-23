@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
-import team.project.sos.domain.order.service.OrderService;
+import team.project.sos.domain.order.service.OrderServiceImpl;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderServiceImpl orderService;
 
     @PostMapping("/stores/{storeId}/order")
     public ResponseEntity<Void> saveOrder(@RequestBody CreateOrderRequestDto requestDto) {
@@ -24,17 +24,36 @@ public class OrderController {
     }
 
     @PatchMapping("/orders/{orderId}")
-    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId,
-                                            @AuthenticationPrincipal UserPrincipal user) {
-        orderService.cancelOrder(orderId, user.getId());
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId
+//                                            , @AuthenticationPrincipal UserPrincipal user
+    ) {
+        // TODO: 토큰에서 로그인된 사용자 정보 꺼내기
+        Long userId = 1L;
+
+        orderService.cancelOrder(orderId, userId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/orders")
-    public ResponseEntity<List<OrderResponseDto>> findOrders(@AuthenticationPrincipal UserPrincipal user) {
-        Long userId = user.getId();
-        List<OrderResponseDto> orders = orderService.findOrders(userId);
-        return ResponseEntity.ok(orders);
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<OrderResponseDto> findOrder(@PathVariable Long orderId
+//                                                      , @AuthenticationPrincipal UserPrincipal user
+    ) {
+        // TODO: 토큰에서 로그인된 사용자 정보 꺼내기
+        Long userId = 1L;
+
+        OrderResponseDto responseDto = orderService.findOrder(orderId, userId);
+        return ResponseEntity.ok(responseDto);
     }
+
+//    @GetMapping("/orders")
+//    public ResponseEntity<List<OrderResponseDto>> findOrders(
+////            @AuthenticationPrincipal UserPrincipal user
+//    ) {
+//        // TODO: 토큰에서 로그인된 사용자 정보 꺼내기
+//        Long userId = 1L;
+//
+//        List<OrderResponseDto> responseDtos = orderService.findOrders(userId);
+//        return ResponseEntity.ok(responseDtos);
+//    }
 
 }
