@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import team.project.sos.common.config.BaseTimeEntity;
+import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
 import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
 
@@ -38,5 +39,25 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    public User(String email, String password, String nickname, String phoneNumber, UserRole role, Grade grade) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.grade = grade;
+    }
+
+    public static User createUser(SignUpRequestDto requestDto, UserRole userRole, String password, Grade grade) {
+        return new User(
+                requestDto.getEmail(),
+                password,
+                requestDto.getNickname(),
+                requestDto.getPhoneNumber(),
+                userRole,
+                grade
+        );
+    }
 
 }
