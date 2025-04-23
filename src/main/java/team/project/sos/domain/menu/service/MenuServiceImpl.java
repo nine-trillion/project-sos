@@ -65,6 +65,14 @@ public class MenuServiceImpl implements MenuService {
                 .orElseThrow(() -> new MenuException("메뉴가 존재하지 않습니다."));
     }
 
+    @Override
+    public List<MenuResponseDto> getMenusByStoreAndCategory(Long storeId, String category) {
+        return menuRepository.findAllByStoreIdAndCategoryAndIsDeletedFalse(storeId, category)
+                .stream()
+                .map(MenuResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
     // NOTE: [가게 조회 연동]
     // 가게 단건 조회 시, 이 메서드를 호출해서 메뉴 리스트를 포함하세요.
     public List<MenuResponseDto> getMenusByStore(Long storeId) {

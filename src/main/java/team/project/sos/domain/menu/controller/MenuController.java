@@ -9,6 +9,8 @@ import team.project.sos.domain.menu.dto.request.UpdateMenuRequestDto;
 import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 import team.project.sos.domain.menu.service.MenuService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/menus")
 @RequiredArgsConstructor
@@ -52,5 +54,16 @@ public class MenuController {
     public ResponseEntity<Void> removeMenu(@PathVariable Long menuId) {
         menuService.remove(menuId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 카테고리별 메뉴 조회
+     */
+    @GetMapping("/category")
+    public List<MenuResponseDto> getMenusByCategory(
+            @PathVariable Long storeId,
+            @RequestParam String category
+    ) {
+        return menuService.getMenusByStoreAndCategory(storeId, category);
     }
 }
