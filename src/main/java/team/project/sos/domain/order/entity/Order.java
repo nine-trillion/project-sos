@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import team.project.sos.common.config.BaseTimeEntity;
 import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.order.enums.OrderStatus;
 import team.project.sos.domain.order.exception.OrderError;
@@ -22,8 +23,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "orders")
-public class Order {
+@Table(name = "orders") // order가 SQL에서 예약어이므로 테이블명을 orders로 설정
+public class Order extends BaseTimeEntity {
 
     @Id
     private Long id;
@@ -43,9 +44,6 @@ public class Order {
 
     @CreationTimestamp
     private LocalDateTime requestedAt;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 
     /**
      * INSERT 전에 자동 실행되는 메서드입니다.
