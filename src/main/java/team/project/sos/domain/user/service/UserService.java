@@ -1,8 +1,8 @@
 package team.project.sos.domain.user.service;
 
-import org.springframework.stereotype.Service;
+import team.project.sos.domain.user.entity.User;
 
-@Service
-public class UserService {
 
+public interface UserService {
+    User findByIdOrElseThrow(Long userId);
 }
