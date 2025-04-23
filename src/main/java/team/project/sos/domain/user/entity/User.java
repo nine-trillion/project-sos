@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import team.project.sos.common.config.BaseTimeEntity;
 import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
 
@@ -11,7 +12,7 @@ import team.project.sos.domain.user.enums.UserRole;
 @Table(name = "User")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User extends BaseEntity {
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
