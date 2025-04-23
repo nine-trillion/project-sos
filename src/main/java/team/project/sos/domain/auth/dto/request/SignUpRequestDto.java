@@ -1,4 +1,4 @@
-package team.project.sos.domain.user.dto.request;
+package team.project.sos.domain.auth.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class UserSignUpRequestDto {
+public class SignUpRequestDto {
 
     @NotBlank(message = "이메일은 필수 입력 값 입니다.")
     @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "올바른 이메일 형식이 아닙니다.")
@@ -29,7 +29,7 @@ public class UserSignUpRequestDto {
     )
     private String phoneNumber;
 
-    public UserSignUpRequestDto(String email, String password, String nickname, String phoneNumber) {
+    public SignUpRequestDto(String email, String password, String nickname, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
