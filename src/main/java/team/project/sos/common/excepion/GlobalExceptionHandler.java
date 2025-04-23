@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import team.project.sos.domain.menu.exception.MenuException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +38,18 @@ public class GlobalExceptionHandler {
                         .status(status.value())
                         .code(code)
                         .message(message)
+                        .build());
+    }
+    /**
+     * 메뉴 관련 예외 처리
+     */
+    @ExceptionHandler(MenuException.class)
+    protected ResponseEntity<ExceptionResponse> handleMenuException(MenuException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ExceptionResponse.builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .code("MENU_ERROR")
+                        .message(e.getMessage())
                         .build());
     }
 }

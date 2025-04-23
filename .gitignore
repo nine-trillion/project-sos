@@ -1,3 +1,25 @@
+# 로컬 전용 설정 파일 무시
+src/main/resources/application.properties
+src/main/resources/application-local.properties
+
+# 로그 파일
+logs/
+*.log
+
+# 환경 변수 파일
+.env
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# 임시 파일
+*.tmp
+*.swp
+
+
 HELP.md
 .gradle
 build/

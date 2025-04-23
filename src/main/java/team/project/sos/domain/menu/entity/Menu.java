@@ -1,3 +1,4 @@
+
 package team.project.sos.domain.menu.entity;
 
 import jakarta.persistence.*;
@@ -14,13 +15,9 @@ public class Menu {
     private Long id;
 
     private Long storeId;
-
     private String name;
-
     private int price;
-
     private String category;
-
     private boolean isDeleted = false;
 
     public Menu(Long storeId, String name, int price, String category) {
