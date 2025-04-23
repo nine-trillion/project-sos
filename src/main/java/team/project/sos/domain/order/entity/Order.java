@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 import team.project.sos.common.config.BaseTimeEntity;
-import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.order.enums.OrderStatus;
 import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
@@ -16,7 +14,6 @@ import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.user.entity.User;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +24,7 @@ import java.util.List;
 public class Order extends BaseTimeEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
