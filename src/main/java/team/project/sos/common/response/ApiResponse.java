@@ -12,7 +12,7 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-    public static <T> ApiResponse of(String message, T data){
-        return new ApiResponse(message,data);
+    public static <T> ApiResponse<T> of(String message, T data){
+        return new ApiResponse<>(message,data);
     }
 }
