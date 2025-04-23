@@ -1,7 +1,8 @@
+
 package team.project.sos.domain.menu.repository;
 
-import team.project.sos.domain.menu.entity.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
+import team.project.sos.domain.menu.entity.Menu;
 
 import java.util.List;
 
