@@ -59,11 +59,8 @@ public class MenuController {
     /**
      * 카테고리별 메뉴 조회
      */
-    @GetMapping("/category")
-    public List<MenuResponseDto> getMenusByCategory(
-            @PathVariable Long storeId,
-            @RequestParam String category
-    ) {
-        return menuService.getMenusByStoreAndCategory(storeId, category);
+    @GetMapping("/store/{storeId}/category/{category}")
+    public List<MenuResponseDto> getMenusByCategory(@PathVariable Long storeId, @PathVariable String category) {
+        return menuService.findMenusByCategory(storeId, category);
     }
 }
