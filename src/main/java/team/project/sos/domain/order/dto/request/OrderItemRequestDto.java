@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import team.project.sos.domain.menu.entity.Menu;
 
 @Getter
 @Setter

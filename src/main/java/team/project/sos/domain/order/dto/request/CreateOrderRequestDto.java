@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import team.project.sos.domain.store.entity.Store;
-import team.project.sos.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
