@@ -13,6 +13,6 @@ public interface OrderService {
 
     OrderResponseDto findOrder(Long orderId, Long userId);
 
-//    List<OrderResponseDto> findOrders(Long userId);
+    List<OrderResponseDto> findOrders(Long userId);
 
 }

@@ -13,7 +13,11 @@ import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.order.repository.OrderItemRepository;
 import team.project.sos.domain.order.repository.OrderRepository;
+import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.service.UserService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,16 +98,16 @@ public class OrderServiceImpl implements OrderService {
         return OrderResponseDto.from(order);
     }
 
-//    public List<OrderResponseDto> findOrders(Long userId) {
-//        // 해당하는 유저 조회
-//        User user = userService.findByIdOrElseThrow(userId);
-//
-//        // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
-//        return orderRepository.findByUser(user)
-//                .stream()
-//                .map(OrderResponseDto::from)
-//                .collect(Collectors.toList());
-//    }
+    public List<OrderResponseDto> findOrders(Long userId) {
+        // 해당하는 유저 조회
+        User user = userService.findByIdOrElseThrow(userId);
+
+        // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
+        return orderRepository.findByUser(user)
+                .stream()
+                .map(OrderResponseDto::from)
+                .collect(Collectors.toList());
+    }
 
     public Order findByIdOrElseThrow(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
