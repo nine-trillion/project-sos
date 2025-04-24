@@ -25,7 +25,7 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Column(nullable = false)
-    private String nickName;
+    private String nickname;
 
     @Column(nullable = false)
     private String phoneNumber;
@@ -40,10 +40,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    public User(String email, String password, String nickName, String phoneNumber, UserRole role, Grade grade) {
+    public User(String email, String password, String nickname, String phoneNumber, UserRole role, Grade grade) {
         this.email = email;
         this.password = password;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.grade = grade;
@@ -60,8 +60,8 @@ public class User extends BaseTimeEntity {
         );
     }
 
-    public void update(String nickName, String phoneNumber) {
-        this.nickName = nickName;
+    public void update(String nickname, String phoneNumber) {
+        this.nickname = nickname;
         this.phoneNumber = phoneNumber;
     }
 
