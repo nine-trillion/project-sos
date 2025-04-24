@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import team.project.sos.domain.store.entity.Store;
-import team.project.sos.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,10 +17,10 @@ import java.util.List;
 public class CreateOrderRequestDto {
 
     @NotNull
-    private User user;
+    private Long userId;
 
     @NotNull
-    private Store store;
+    private Long storeId;
 
     @NotNull
     private List<OrderItemRequestDto> items;
