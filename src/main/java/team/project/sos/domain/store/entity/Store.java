@@ -46,11 +46,20 @@ public class Store extends BaseTimeEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    public void updateStoreInfo(String name, LocalTime openTime, LocalTime closeTime, String notice) {
+    public void updateStoreInfo(String name, LocalTime openTime, LocalTime closeTime, int minOrderPrice, String notice) {
         this.name = name;
         this.openTime = openTime;
         this.closeTime = closeTime;
+        this.minOrderPrice = minOrderPrice;
         this.notice = notice;
+    }
+
+    public boolean isOperating() {
+        LocalTime now = LocalTime.now();
+
+        return status == StoreStatus.OPERATING &&
+                (now.equals(openTime) || now.isAfter(openTime)) &&
+                now.isBefore(closeTime);
     }
 
     public Store(String name, LocalTime openTime, LocalTime closeTime, int minOrderPrice, User owner) {

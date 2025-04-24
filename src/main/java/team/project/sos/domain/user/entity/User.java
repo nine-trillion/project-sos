@@ -11,7 +11,7 @@ import team.project.sos.domain.user.enums.UserRole;
 
 @Entity
 @Table(name = "User")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 public class User extends BaseTimeEntity {
     @Id
