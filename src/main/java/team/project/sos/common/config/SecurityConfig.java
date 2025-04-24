@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(SecurityConstants.WHITE_LIST).permitAll()
                         // 관리자 전용 페이지
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/**").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/api/**").hasAnyRole("USER","ADMIN","OWNER")
                         // 그 외 모든 요청은 인증된 사용자만 접근 허용
                         .anyRequest().authenticated()
                 )
