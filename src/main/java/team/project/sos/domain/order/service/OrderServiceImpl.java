@@ -13,7 +13,12 @@ import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.order.repository.OrderItemRepository;
 import team.project.sos.domain.order.repository.OrderRepository;
+import team.project.sos.domain.user.entity.User;
+import team.project.sos.domain.user.enums.UserRole;
 import team.project.sos.domain.user.service.UserService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,19 +99,52 @@ public class OrderServiceImpl implements OrderService {
         return OrderResponseDto.from(order);
     }
 
-//    public List<OrderResponseDto> findOrders(Long userId) {
-//        // 해당하는 유저 조회
-//        User user = userService.findByIdOrElseThrow(userId);
-//
-//        // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
-//        return orderRepository.findByUser(user)
-//                .stream()
-//                .map(OrderResponseDto::from)
-//                .collect(Collectors.toList());
-//    }
+    public List<OrderResponseDto> findOrders(Long userId, Long currentUserId) {
+        // 현재 로그인한 유저 조회
+        User currentUser = userService.findByIdOrElseThrow(currentUserId);
 
+        // 현재 로그인한 유저가 관리자가 아닐 경우 예외 발생
+        if (currentUser.getRole() != UserRole.ADMIN) {
+            throw new OrderException(OrderError.NO_PERMISSION);
+        }
+
+        // 주문 목록을 조회할 유저 조회
+        User user = userService.findByIdOrElseThrow(userId);
+
+        // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
+        return orderRepository.findByUser(user)
+                .stream()
+                .map(OrderResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponseDto> findMyOrders(Long userId) {
+        // 해당하는 유저 조회
+        User user = userService.findByIdOrElseThrow(userId);
+
+        // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
+        return orderRepository.findByUser(user)
+                .stream()
+                .map(OrderResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 주문 아이디를 받아서 주문을 반환합니다.
+     * 해당하는 주문이 없을 시 예외를 발생시킵니다.
+     */
     public Order findByIdOrElseThrow(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
+    }
+
+    /**
+     * 주문 아이디와 가게 아이디를 받아서 주문을 반환합니다.
+     * 해당하는 주문이 없을 시 예외를 발생시킵니다.
+     */
+    public Order findByIdAndStoreIdOrElseThrow(Long orderId, Long storeId) {
+        return orderRepository.findById(orderId)
+                .filter(order -> order.getStore().getId().equals(storeId))
+                .orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
     }
 
 }
