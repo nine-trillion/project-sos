@@ -1,50 +1,58 @@
 package team.project.sos.domain.review.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import team.project.sos.domain.review.service.ReviewServiceImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import team.project.sos.domain.review.dto.CreateReviewRequestDto;
+import team.project.sos.domain.review.dto.CreateReviewResponseDto;
+import team.project.sos.domain.review.dto.UpdateReviewRequestDto;
+import team.project.sos.domain.review.service.ReviewService;
+import team.project.sos.domain.user.entity.User;
 
-
-//return ResponseEntity.status(HttpStatus.CREATED).body(response); // 생성
-//return ResponseEntity.ok(response); // 조회 및 수정
-//return ResponseEntity.noContent().build(); // 삭제
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class ReviewController {
 
-    private final ReviewServiceImpl reviewService;
-//
-//    @PostMapping("reviews/{orderId}")
-//    ResponseEntity<CreateReviewResponseDto> saveReview(@RequestBody CreateReviewRequestDto createReviewRequestDto, @PathVariable Long orderId) {
-//        CreateReviewResponseDto createReviewResponseDto =
-//                reviewService.saveReview(user,createReviewRequestDto);
-//
-//       return ResponseEntity.status(HttpStatus.CREATED).body(createReviewResponseDto);
-//    }
-//
-//    @GetMapping("stores/{storeId}/reviews")
-//    ResponseEntity<List<CreateReviewResponseDto>> findAllReviews(@PathVariable Long storeId) {
-//        List<CreateReviewResponseDto> responseList = reviewService.findAllReviews(storeId);
-//
-//        return ResponseEntity.ok(responseList);
-//    }
-//
-//    @PutMapping("{orderId}/reviews")
-//    ResponseEntity<CreateReviewResponseDto> updateReviews(@PathVariable Long orderId) {
-//        CreateReviewResponseDto createReviewResponseDto =
-//                reviewService.updateReview(reviewId, wishContent);
-//
-//        return ResponseEntity.ok(createReviewResponseDto);
-//    }
-//
-//    @DeleteMapping("reviews/{orderId}")
-//    ResponseEntity<String> deleteReviews(@PathVariable Long orderId) {
-//        reviewService.removeReview(user,reivewId);
-//
-//        return ResponseEntity.noContent().build();
-//    }
+    private final ReviewService reviewService;
+
+    @PostMapping("/api/stores/{storeId}/reviews/{orderId}")
+    public ResponseEntity<CreateReviewResponseDto> saveReview(@RequestBody CreateReviewRequestDto dto, @PathVariable Long orderId, @PathVariable Long storeId,
+                                                              @AuthenticationPrincipal(expression = "user") User user) {
+        CreateReviewResponseDto response =
+                reviewService.saveReview(orderId, storeId, user, dto);
+
+       return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("stores/{storeId}/reviews")
+    public ResponseEntity<List<CreateReviewResponseDto>> findAllReviews(@PathVariable Long storeId) {
+
+        List<CreateReviewResponseDto> response = reviewService.findAllReviews(storeId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("{orderId}/reviews")
+    public ResponseEntity<CreateReviewResponseDto> updateReviews(@PathVariable Long orderId,
+                                                                 @AuthenticationPrincipal(expression = "user") User user,
+                                                                 @RequestBody @Valid UpdateReviewRequestDto dto) {
+        CreateReviewResponseDto response =
+                reviewService.updateReview(orderId,dto.getNewContent(),user);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("reviews/{orderId}")
+    public ResponseEntity<String> deleteReviews(@PathVariable Long orderId,@AuthenticationPrincipal(expression = "user") User user) {
+        reviewService.removeReview(user,orderId);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
