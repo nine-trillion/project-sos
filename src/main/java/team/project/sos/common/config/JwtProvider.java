@@ -32,15 +32,15 @@ public class JwtProvider {
 
     @PostConstruct
     public void init() {
-        byte[] bytes = Base64.getDecoder().decode(secretKey);
+        log.info(">>> JWT_SECRET_KEY: [{}]", secretKey);
+        byte[] bytes = Base64.getDecoder().decode(secretKey.trim());
         key = Keys.hmacShaKeyFor(bytes);
     }
 
     public String createToken(Long userId, String email, UserRole userRole) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
+        return Jwts.builder()
                         .setSubject(String.valueOf(userId))
                         .claim("email", email)
                         .claim("userRole", userRole)
@@ -52,7 +52,7 @@ public class JwtProvider {
 
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7);
+            return tokenValue.substring(7).trim();
         }
         throw new BaseException(AuthError.TOKEN_NOT_FOUND);
     }
