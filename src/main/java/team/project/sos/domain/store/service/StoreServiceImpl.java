@@ -3,6 +3,7 @@ package team.project.sos.domain.store.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 import team.project.sos.domain.menu.service.MenuService;
 import team.project.sos.domain.store.dto.response.StoreDetailResponse;
 import team.project.sos.domain.store.dto.response.StorePreviewResponse;
@@ -11,6 +12,8 @@ import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.store.exception.StoreError;
 import team.project.sos.domain.store.exception.StoreException;
 import team.project.sos.domain.store.repository.StoreRepository;
+import team.project.sos.domain.user.entity.User;
+import team.project.sos.domain.user.enums.UserRole;
 import team.project.sos.domain.user.service.UserService;
 
 import java.time.LocalTime;
@@ -39,13 +42,22 @@ public class StoreServiceImpl implements StoreService {
      */
     @Override
     public StoreResponse saveStore(Long loginId, String name, LocalTime openTime, LocalTime closeTime, int minOrderPrice) {
-//        User user = userService.findByIdOrElseThrow(loginId);
-//        TODO: 사용자 권한 확인
-//        TODO: 사용자가 가진 가게 개수 확인
+        User owner = userService.findByIdOrElseThrow(loginId);
 
-//        Store store = new Store(name, openTime, closeTime, minOrderPrice, owner);
+        if (!UserRole.OWNER.equals(owner.getRole())) {
+            throw new StoreException(StoreError.UNAUTHORIZED_STORE_OWNER);
+        }
 
-        return null;
+        long storeCount = storeRepository.countByOwner_Id(owner.getId());
+
+        if (storeCount >= 3) {
+            throw new StoreException(StoreError.EXCEEDED_STORE_LIMIT);
+        }
+
+        Store store = new Store(name, openTime, closeTime, minOrderPrice, owner);
+        Store saved = storeRepository.save(store);
+
+        return StoreResponse.from(saved);
     }
 
     /**
@@ -74,10 +86,9 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public StoreDetailResponse findStoreWithMenu(Long storeId) {
         Store store = findStoreByIdOrElseThrow(storeId);
-//        List<MenuResponse> = menuService.getMenusByStore(storeId);
+        List<MenuResponseDto> menus = menuService.getMenusByStore(storeId);
 
-//        return StoreDetailResponse.from(store, menus);
-        return null;
+        return StoreDetailResponse.from(StoreResponse.from(store), menus);
     }
 
     /**
@@ -94,7 +105,8 @@ public class StoreServiceImpl implements StoreService {
     @Override
     @Transactional
     public StoreResponse updateStore(Long loginId, Long storeId, String name, LocalTime openTime, LocalTime closeTime, String notice) {
-//        userService.findByIdOrElseThrow(loginId);
+        userService.findByIdOrElseThrow(loginId);
+
         Store store = findStoreByIdOrElseThrow(storeId);
         Long storeOwnerId = store.getOwner().getId();
 
@@ -120,7 +132,8 @@ public class StoreServiceImpl implements StoreService {
     @Override
     @Transactional
     public void removeStore(Long loginId, Long storeId) {
-//        userService.findByIdOrElseThrow(loginId);
+        userService.findByIdOrElseThrow(loginId);
+
         Store store = findStoreByIdOrElseThrow(storeId);
         Long storeOwnerId = store.getOwner().getId();
 

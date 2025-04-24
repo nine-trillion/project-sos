@@ -11,6 +11,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     List<Store> findAllByNameContains(String name);
 
+    long countByOwner_Id(Long ownerId);
+
     @Query("select s from Store s where s.owner.id = :ownerId")
     List<Store> findStoresByOwner(@Param("ownerId") Long ownerId);
 }
