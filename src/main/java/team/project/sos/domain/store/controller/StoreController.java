@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.domain.store.dto.request.StoreCreateRequest;
@@ -25,9 +26,9 @@ public class StoreController {
     private final StoreService storeService;
 
     @PostMapping
-    public ResponseEntity<StoreResponse> saveStore(@Valid @RequestBody StoreCreateRequest storeRequest) {
-        // TODO: 토큰에서 로그인된 사용자 정보 꺼내기
-        Long loginId = 1L;
+    public ResponseEntity<StoreResponse> saveStore(@Valid @RequestBody StoreCreateRequest storeRequest,
+                                                   @AuthenticationPrincipal String userId) {
+        Long loginId = Long.parseLong(userId);
 
         StoreResponse response = storeService.saveStore(
                 loginId,
@@ -56,9 +57,9 @@ public class StoreController {
 
     @PutMapping("/{storeId}")
     public ResponseEntity<StoreResponse> updateStore(@NotNull @PathVariable Long storeId,
-                                                     @Valid @RequestBody StoreUpdateRequest updateRequest) {
-        // TODO: 로그인된 사용자 아이디 꺼내기
-        Long loginId = 1L;
+                                                     @Valid @RequestBody StoreUpdateRequest updateRequest,
+                                                     @AuthenticationPrincipal String userId) {
+        Long loginId = Long.parseLong(userId);
 
         StoreResponse response = storeService.updateStore(
                 loginId,
@@ -73,9 +74,10 @@ public class StoreController {
     }
 
     @DeleteMapping("/{storeId}")
-    public ResponseEntity<Void> removeStore(@NotNull @PathVariable Long storeId) {
-        // TODO: 로그인된 사용자 아이디 꺼내기
-        Long loginUserId = 1L;
+    public ResponseEntity<Void> removeStore(@NotNull @PathVariable Long storeId,
+                                            @AuthenticationPrincipal String userId) {
+        Long loginUserId = Long.parseLong(userId);
+
         storeService.removeStore(loginUserId, storeId);
 
         return ResponseEntity.noContent().build();

@@ -53,6 +53,14 @@ public class Store extends BaseTimeEntity {
         this.notice = notice;
     }
 
+    public boolean isOperating() {
+        LocalTime now = LocalTime.now();
+
+        return status == StoreStatus.OPERATING &&
+                (now.equals(openTime) || now.isAfter(openTime)) &&
+                now.isBefore(closeTime);
+    }
+
     public Store(String name, LocalTime openTime, LocalTime closeTime, int minOrderPrice, User owner) {
         this.name = name;
         this.openTime = openTime;

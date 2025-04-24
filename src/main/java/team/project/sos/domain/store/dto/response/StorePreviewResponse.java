@@ -15,6 +15,7 @@ public class StorePreviewResponse {
     private final LocalTime openTime;
     private final LocalTime closeTime;
     private final int minOrderPrice;
+    private final boolean isOperating;
 
     public static StorePreviewResponse from(Store store) {
         return new StorePreviewResponse(
@@ -22,7 +23,8 @@ public class StorePreviewResponse {
                 store.getName(),
                 store.getOpenTime(),
                 store.getCloseTime(),
-                store.getMinOrderPrice()
+                store.getMinOrderPrice(),
+                store.isOperating()
         );
     }
 }
