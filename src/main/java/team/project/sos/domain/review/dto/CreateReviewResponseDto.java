@@ -17,6 +17,8 @@ public class CreateReviewResponseDto {
 
     private final LocalDateTime createdAt;
 
+    private final LocalDateTime updatedAt;
+
 
     public static CreateReviewResponseDto from(Review review) {
             return CreateReviewResponseDto.builder()
@@ -31,6 +33,7 @@ public class CreateReviewResponseDto {
         return CreateReviewResponseDto.builder()
                 .content(review.getContent())
                 .rating(review.getRating())
+                .updatedAt(review.getUpdatedAt())
                 .build();
     }
 
