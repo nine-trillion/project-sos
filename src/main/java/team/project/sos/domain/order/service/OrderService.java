@@ -2,6 +2,7 @@ package team.project.sos.domain.order.service;
 
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
+import team.project.sos.domain.order.entity.Order;
 
 import java.util.List;
 
@@ -13,6 +14,12 @@ public interface OrderService {
 
     OrderResponseDto findOrder(Long orderId, Long userId);
 
-    List<OrderResponseDto> findOrders(Long userId);
+    List<OrderResponseDto> findOrders(Long userId, Long currentUserId);
+
+    List<OrderResponseDto> findMyOrders(Long userId);
+
+    Order findByIdOrElseThrow(Long orderId);
+
+    Order findByIdAndStoreIdOrElseThrow(Long orderId, Long storeId);
 
 }
