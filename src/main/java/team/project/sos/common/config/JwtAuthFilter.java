@@ -33,8 +33,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String url = httpServletRequest.getRequestURI();
         log.info("JwtAuthFilter url{}",url);
 
+        String method = httpServletRequest.getMethod();
         // "/api/auth"로 시작하는 요청은 jwt 검증을 건너뛰고 필터 체인 실행
-        if (url.startsWith("/api/auth")) {
+        if (url.startsWith("/api/auth") && !"DELETE".equals(method)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
