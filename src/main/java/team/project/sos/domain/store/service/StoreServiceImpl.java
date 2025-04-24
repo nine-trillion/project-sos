@@ -104,7 +104,10 @@ public class StoreServiceImpl implements StoreService {
      */
     @Override
     @Transactional
-    public StoreResponse updateStore(Long loginId, Long storeId, String name, LocalTime openTime, LocalTime closeTime, String notice) {
+    public StoreResponse updateStore(
+            Long loginId, Long storeId, String name, LocalTime openTime,
+            LocalTime closeTime, int minOrderPrice, String notice
+    ) {
         userService.findByIdOrElseThrow(loginId);
 
         Store store = findStoreByIdOrElseThrow(storeId);
@@ -117,7 +120,7 @@ public class StoreServiceImpl implements StoreService {
             throw new StoreException(StoreError.INVALID_OPEN_TIME_AFTER_CLOSE);
         }
 
-        store.updateStoreInfo(name, openTime, closeTime, notice);
+        store.updateStoreInfo(name, openTime, closeTime, minOrderPrice, notice);
 
         return StoreResponse.from(store);
     }

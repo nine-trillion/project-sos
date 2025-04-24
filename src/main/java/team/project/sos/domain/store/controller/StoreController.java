@@ -67,6 +67,7 @@ public class StoreController {
                 updateRequest.getName(),
                 updateRequest.getOpenTime(),
                 updateRequest.getCloseTime(),
+                updateRequest.getMinOrderPrice(),
                 updateRequest.getNotice()
         );
 
@@ -82,4 +83,6 @@ public class StoreController {
 
         return ResponseEntity.noContent().build();
     }
+
+
 }
