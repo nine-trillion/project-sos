@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
     private Grade getGrade(UserRole userRole) {
         return switch (userRole) {
             case ADMIN -> Grade.VIP;
-            case USER -> Grade.BASIC;
+            case USER, OWNER -> Grade.BASIC;
         };
     }
 }
