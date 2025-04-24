@@ -3,6 +3,7 @@ package team.project.sos.domain.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.menu.service.MenuService;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.request.OrderItemRequestDto;
@@ -13,6 +14,8 @@ import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.order.repository.OrderItemRepository;
 import team.project.sos.domain.order.repository.OrderRepository;
+import team.project.sos.domain.store.entity.Store;
+import team.project.sos.domain.store.service.StoreService;
 import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.enums.UserRole;
 import team.project.sos.domain.user.service.UserService;
@@ -28,18 +31,26 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final UserService userService;
     private final MenuService menuService;
+    private final StoreService storeService;
 
+    /**
+     * 일반 유저가 주문을 하기 위해 사용합니다.
+     */
     @Transactional
-    public Long saveOrder(CreateOrderRequestDto requestDto, Long userId) {
+    public Long saveOrder(CreateOrderRequestDto requestDto, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
-        if (userId == null) {
+        if (currentUserId == null) {
             throw new OrderException(OrderError.NOT_LOGGED_IN);
         }
 
+        // 유저, 가게 조회
+        User user = userService.findByIdOrElseThrow(requestDto.getUserId());
+        Store store = storeService.findStoreByIdOrElseThrow(requestDto.getStoreId());
+
         // 주문 엔티티 생성
         Order order = Order.builder()
-                .user(requestDto.getUser())
-                .store(requestDto.getStore())
+                .user(user)
+                .store(store)
                 .price(requestDto.getPrice())
                 .requestedAt(requestDto.getRequestedAt())
                 .build();
@@ -49,11 +60,11 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문 항목 저장
         for (OrderItemRequestDto itemDto : requestDto.getItems()) {
-//            Menu menu = menuService.findMenuIncludeDeleted();
+            Menu menu = menuService.findMenuIncludeDeleted(itemDto.getMenuId());
 
             OrderItem item = OrderItem.builder()
                     .order(order)
-                    .menu(itemDto.getMenu())
+                    .menu(menu)
                     .quantity(itemDto.getQuantity())
                     .build();
 
@@ -63,10 +74,13 @@ public class OrderServiceImpl implements OrderService {
         return savedOrder.getId();
     }
 
+    /**
+     * 일반 유저가 자신의 주문을 취소하기 위해 사용합니다.
+     */
     @Transactional
-    public void cancelOrder(Long orderId, Long userId) {
+    public void cancelOrder(Long orderId, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
-        if (userId == null) {
+        if (currentUserId == null) {
             throw new OrderException(OrderError.NOT_LOGGED_IN);
         }
 
@@ -74,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = findByIdOrElseThrow(orderId);
 
         // 현재 로그인한 유저의 주문이 아닐 경우 예외 발생
-        if (!order.getUser().getId().equals(userId)) {
+        if (!order.getUser().getId().equals(currentUserId)) {
             throw new OrderException(OrderError.NO_PERMISSION);
         }
 
@@ -82,9 +96,12 @@ public class OrderServiceImpl implements OrderService {
         order.cancel();
     }
 
-    public OrderResponseDto findOrder(Long orderId, Long userId) {
+    /**
+     * 일반 유저가 자신의 주문 단건을 조회하기 위해 사용합니다.
+     */
+    public OrderResponseDto findOrder(Long orderId, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
-        if (userId == null) {
+        if (currentUserId == null) {
             throw new OrderException(OrderError.NOT_LOGGED_IN);
         }
 
@@ -92,14 +109,26 @@ public class OrderServiceImpl implements OrderService {
         Order order = findByIdOrElseThrow(orderId);
 
         // 현재 로그인한 유저의 주문이 아닐 경우 예외 발생
-        if (!order.getUser().getId().equals(userId)) {
+        if (!order.getUser().getId().equals(currentUserId)) {
             throw new OrderException(OrderError.NO_PERMISSION);
         }
 
         return OrderResponseDto.from(order);
     }
 
+    /**
+     * 관리자(UserRole.ADMIN)가 특정 유저의 주문 목록을 조회하기 위해 사용합니다.
+     *
+     * @param userId        주문 목록을 조회할 유저 아이디
+     * @param currentUserId 현재 로그인한 유저 아이디
+     * @return 특정 유저의 주문 목록
+     */
     public List<OrderResponseDto> findOrders(Long userId, Long currentUserId) {
+        // 로그인하지 않은 경우 예외 발생
+        if (currentUserId == null) {
+            throw new OrderException(OrderError.NOT_LOGGED_IN);
+        }
+
         // 현재 로그인한 유저 조회
         User currentUser = userService.findByIdOrElseThrow(currentUserId);
 
@@ -118,9 +147,17 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
-    public List<OrderResponseDto> findMyOrders(Long userId) {
+    /**
+     * 일반 유저가 자신의 주문 목록을 조회하기 위해 사용합니다.
+     */
+    public List<OrderResponseDto> findMyOrders(Long currentUserId) {
+        // 로그인하지 않은 경우 예외 발생
+        if (currentUserId == null) {
+            throw new OrderException(OrderError.NOT_LOGGED_IN);
+        }
+
         // 해당하는 유저 조회
-        User user = userService.findByIdOrElseThrow(userId);
+        User user = userService.findByIdOrElseThrow(currentUserId);
 
         // 유저에 해당하는 주문 목록을 DTO로 변환해서 리턴
         return orderRepository.findByUser(user)
