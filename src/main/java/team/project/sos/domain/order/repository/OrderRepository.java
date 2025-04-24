@@ -7,5 +7,7 @@ import team.project.sos.domain.user.entity.User;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
     List<Order> findByUser(User user);
+
 }

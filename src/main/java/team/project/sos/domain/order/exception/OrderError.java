@@ -15,7 +15,8 @@ public enum OrderError implements ErrorCode {
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "ORDER_ERROR_004", "수량은 1 이상이어야 합니다."),
     NO_SUCH_ORDER(HttpStatus.NOT_FOUND, "ORDER_ERROR_005", "해당하는 주문이 없습니다."),
     ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "ORDER_ERROR_006", "이미 취소된 주문입니다."),
-    NO_PERMISSION(HttpStatus.FORBIDDEN, "ORDER_ERROR_006", "권한이 없습니다.");
+    NO_PERMISSION(HttpStatus.FORBIDDEN, "ORDER_ERROR_006", "권한이 없습니다."),
+    NOT_LOGGED_IN(HttpStatus.UNAUTHORIZED, "ORDER_ERROR_007", "로그인이 필요합니다.");
 
     private final HttpStatus status;
     private final String code;

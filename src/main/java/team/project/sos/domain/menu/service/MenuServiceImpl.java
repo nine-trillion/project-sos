@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import team.project.sos.domain.menu.dto.request.CreateMenuRequestDto;
 import team.project.sos.domain.menu.dto.request.UpdateMenuRequestDto;
-import team.project.sos.domain.menu.dto.response.MenuResponse;
+import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.menu.repository.MenuRepository;
 import team.project.sos.domain.menu.exception.MenuException;
@@ -27,7 +27,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuResponse save(CreateMenuRequestDto requestDto) {
+    public MenuResponseDto save(CreateMenuRequestDto requestDto) {
         checkOwnerRole(requestDto.getRole());  // 임시 권한 체크
         Menu menu = new Menu(
                 requestDto.getStoreId(),
@@ -35,20 +35,20 @@ public class MenuServiceImpl implements MenuService {
                 requestDto.getPrice(),
                 requestDto.getCategory()
         );
-        return MenuResponse.from(menuRepository.save(menu));
+        return MenuResponseDto.from(menuRepository.save(menu));
     }
 
     @Override
-    public MenuResponse find(Long menuId) {
-        return MenuResponse.from(findByIdOrElseThrow(menuId));
+    public MenuResponseDto find(Long menuId) {
+        return MenuResponseDto.from(findByIdOrElseThrow(menuId));
     }
 
     @Override
-    public MenuResponse update(Long menuId, UpdateMenuRequestDto requestDto) {
+    public MenuResponseDto update(Long menuId, UpdateMenuRequestDto requestDto) {
         checkOwnerRole(requestDto.getRole());  // 임시 권한 체크
         Menu menu = findByIdOrElseThrow(menuId);
         menu.update(requestDto.getName(), requestDto.getPrice(), requestDto.getCategory());
-        return MenuResponse.from(menu);
+        return MenuResponseDto.from(menu);
     }
 
     @Override
@@ -65,12 +65,20 @@ public class MenuServiceImpl implements MenuService {
                 .orElseThrow(() -> new MenuException("메뉴가 존재하지 않습니다."));
     }
 
+    @Override
+    public List<MenuResponseDto> getMenusByStoreAndCategory(Long storeId, String category) {
+        return menuRepository.findAllByStoreIdAndCategoryAndIsDeletedFalse(storeId, category)
+                .stream()
+                .map(MenuResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
     // NOTE: [가게 조회 연동]
     // 가게 단건 조회 시, 이 메서드를 호출해서 메뉴 리스트를 포함하세요.
-    public List<MenuResponse> getMenusByStore(Long storeId) {
+    public List<MenuResponseDto> getMenusByStore(Long storeId) {
         return menuRepository.findAllByStoreIdAndIsDeletedFalse(storeId)
                 .stream()
-                .map(MenuResponse::from)
+                .map(MenuResponseDto::from)
                 .collect(Collectors.toList());
     }
 

@@ -2,12 +2,13 @@ package team.project.sos.domain.store.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import team.project.sos.domain.store.entity.Store;
 
 import java.time.LocalTime;
 
 @Getter
 @AllArgsConstructor
-public class StoreSaveResponse {
+public class StoreResponse {
     /**
      * 가게 명
      */
@@ -39,16 +40,15 @@ public class StoreSaveResponse {
     private final String notice;
 
     /**
-     * 가게 주인 식별자
+     * 가게 사장 식별자
      */
     private final Long ownerId;
 
     /**
-     * 가게 주인 이름
+     * 가게 사장 이름
      */
     private final String ownerName;
 
-/*
     public static StoreResponse from(Store store) {
         return new StoreResponse(
                 store.getName(),
@@ -58,8 +58,7 @@ public class StoreSaveResponse {
                 store.getStatus().name(),
                 store.getNotice(),
                 store.getOwner().getId(),
-                store.getOwner().getName()
-        )
+                store.getOwner().getNickname()
+        );
     }
-*/
 }
