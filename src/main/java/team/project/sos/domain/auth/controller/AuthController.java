@@ -23,11 +23,20 @@ import team.project.sos.domain.user.enums.UserRole;
 public class AuthController {
     private final AuthService authService;
 
+    // 일반 유저 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignUpResponseDto>> save(
             @Valid @RequestBody SignUpRequestDto signUpRequestDto) {
         SignUpResponseDto saveSignUp = authService.save(signUpRequestDto, UserRole.USER);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of("회원가입이 완료되었습니다.", saveSignUp));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of("[USER] 회원가입이 완료되었습니다.", saveSignUp));
+    }
+
+    // 사장 회원가입
+    @PostMapping("/signup/owner")
+    public ResponseEntity<ApiResponse<SignUpResponseDto>> saveOwner(
+            @Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+        SignUpResponseDto saveSignUp = authService.save(signUpRequestDto, UserRole.OWNER);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of("[OWNER] 회원가입이 완료되었습니다.", saveSignUp));
     }
 
     @PostMapping("/login")

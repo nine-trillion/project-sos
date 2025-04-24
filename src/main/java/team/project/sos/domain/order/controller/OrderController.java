@@ -59,7 +59,7 @@ public class OrderController {
     @GetMapping("/users/{userId}/orders")
     public ResponseEntity<List<OrderResponseDto>> findOrders(@PathVariable Long userId,
                                                              @AuthenticationPrincipal String currentUserId) {
-
+        return null;
     }
 
     @GetMapping("/orders")

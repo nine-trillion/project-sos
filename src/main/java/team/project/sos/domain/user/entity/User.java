@@ -30,7 +30,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -58,6 +58,11 @@ public class User extends BaseTimeEntity {
                 userRole,
                 grade
         );
+    }
+
+    public void update(String nickname, String phoneNumber) {
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
     }
 
 }
