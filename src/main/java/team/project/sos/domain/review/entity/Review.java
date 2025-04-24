@@ -4,14 +4,19 @@ package team.project.sos.domain.review.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.Getter;
+import lombok.*;
+import team.project.sos.common.config.BaseTimeEntity;
 import team.project.sos.domain.order.entity.Order;
+import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.user.entity.User;
 
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Getter
 @Table(name = "review")
-public class Review {
+public class Review extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +28,9 @@ public class Review {
     private User user;
 
     //한 개의 가게에 리뷰 여러개
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id")
-//    private Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @OneToOne
     @JoinColumn(name = "order_id")
@@ -37,4 +42,9 @@ public class Review {
 
     @Column(nullable = false)
     private String content;
+
+
+    public void updateReview(String newContent) {
+        this.content = newContent;
+    }
 }
