@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import team.project.sos.common.excepion.BaseException;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
 import team.project.sos.domain.order.entity.Order;
@@ -17,6 +18,7 @@ import team.project.sos.domain.order.repository.OrderRepository;
 import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
+import team.project.sos.domain.user.exception.UserError;
 import team.project.sos.domain.user.service.UserService;
 
 import java.util.List;
@@ -145,6 +147,26 @@ class OrderServiceImplTest {
 
     @Test
     @DisplayName("주문 목록 조회_성공")
+    void findOrdersSuccess() {
+        // given
+        User user = createMockUser();
+        User admin = createMockAdmin();
+        List<Order> orders = createMockOrders();
+
+        when(orderRepository.findByUser(user)).thenReturn(orders);
+        when(userService.findByIdOrElseThrow(user.getId())).thenReturn(user);
+        when(userService.findByIdOrElseThrow(admin.getId())).thenReturn(admin);
+
+        // when
+        List<OrderResponseDto> responseDtos = orderService.findOrders(user.getId(), admin.getId());
+
+        // then
+        assertEquals(orders.size(), responseDtos.size());
+        assertEquals(orders.get(0).getUser().getId(), user.getId());
+    }
+
+    @Test
+    @DisplayName("내 주문 목록 조회_성공")
     void findMyOrdersSuccess() {
         // given
         User user = createMockUser();
@@ -161,11 +183,43 @@ class OrderServiceImplTest {
         assertEquals(1L, responseDtos.get(0).getId());
     }
 
+    @Test
+    @DisplayName("내 주문 목록 조회_실패_로그인 X")
+    void findMyOrderFailsWhenNotLoggedIn() {
+        // when
+        OrderException exception = assertThrows(OrderException.class, () ->
+                orderService.findMyOrders(null));
+
+        // then
+        assertEquals(OrderError.NOT_LOGGED_IN, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("내 주문 목록 조회_실패_유저 없음")
+    void findMyOrderFailsWhenUserNotExist() {
+        // given
+        when(userService.findByIdOrElseThrow(999L)).thenThrow(new BaseException(UserError.USER_NOT_FOUND));
+
+        // when
+        BaseException exception = assertThrows(BaseException.class, () ->
+                orderService.findMyOrders(999L));
+
+        // then
+        assertEquals(UserError.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
     private User createMockUser() {
         User user = new User();
         ReflectionTestUtils.setField(user, "id", 1L);
         ReflectionTestUtils.setField(user, "role", UserRole.USER);
         ReflectionTestUtils.setField(user, "grade", Grade.BASIC);
+        return user;
+    }
+
+    private User createMockAdmin() {
+        User user = new User();
+        ReflectionTestUtils.setField(user, "id", 2L);
+        ReflectionTestUtils.setField(user, "role", UserRole.ADMIN);
         return user;
     }
 
