@@ -15,6 +15,8 @@ import team.project.sos.domain.order.enums.OrderStatus;
 import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.order.repository.OrderRepository;
+import team.project.sos.domain.store.entity.Store;
+import team.project.sos.domain.store.enums.StoreStatus;
 import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
@@ -113,7 +115,7 @@ class OrderServiceImplTest {
         // then
         assertNotNull(responseDto);
         assertEquals(order.getId(), responseDto.getId());
-        assertEquals(order.getUser().getId(), responseDto.getUser().getId());
+        assertEquals(order.getUser().getId(), responseDto.getUserId());
     }
 
     @Test
@@ -223,12 +225,21 @@ class OrderServiceImplTest {
         return user;
     }
 
+    private Store createMockStore() {
+        Store store = new Store();
+        ReflectionTestUtils.setField(store, "id", 1L);
+        ReflectionTestUtils.setField(store, "status", StoreStatus.OPERATING);
+        return store;
+    }
+
     private Order createMockOrder() {
         User user = createMockUser();
+        Store store = createMockStore();
 
         return Order.builder()
                 .id(1L)
                 .user(user)
+                .store(store)
                 .status(OrderStatus.PENDING)
                 .price(10000)
                 .build();
@@ -236,8 +247,10 @@ class OrderServiceImplTest {
 
     private List<Order> createMockOrders() {
         User user = createMockUser();
-        Order order1 = Order.builder().id(1L).user(user).status(OrderStatus.PENDING).price(10000).build();
-        Order order2 = Order.builder().id(2L).user(user).status(OrderStatus.PENDING).price(20000).build();
+        Store store = createMockStore();
+
+        Order order1 = Order.builder().id(1L).user(user).store(store).status(OrderStatus.PENDING).price(10000).build();
+        Order order2 = Order.builder().id(2L).user(user).store(store).status(OrderStatus.PENDING).price(20000).build();
         return List.of(order1, order2);
     }
 

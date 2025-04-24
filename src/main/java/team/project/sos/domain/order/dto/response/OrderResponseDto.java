@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 public class OrderResponseDto {
 
     private Long id;
-    private User user;
-    private Store store;
+    private Long userId;
+    private Long storeId;
     private OrderStatus status;
     private int price;
     private LocalDateTime requestedAt;
@@ -24,8 +24,8 @@ public class OrderResponseDto {
     public static OrderResponseDto from(Order order) {
         return OrderResponseDto.builder()
                 .id(order.getId())
-                .user(order.getUser())
-                .store(order.getStore())
+                .userId(order.getUser().getId())
+                .storeId(order.getStore().getId())
                 .status(order.getStatus())
                 .price(order.getPrice())
                 .requestedAt(order.getRequestedAt())

@@ -14,6 +14,8 @@ import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.order.repository.OrderItemRepository;
 import team.project.sos.domain.order.repository.OrderRepository;
+import team.project.sos.domain.store.entity.Store;
+import team.project.sos.domain.store.service.StoreService;
 import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.enums.UserRole;
 import team.project.sos.domain.user.service.UserService;
@@ -29,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final UserService userService;
     private final MenuService menuService;
+    private final StoreService storeService;
 
     /**
      * 일반 유저가 주문을 하기 위해 사용합니다.
@@ -40,10 +43,14 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderException(OrderError.NOT_LOGGED_IN);
         }
 
+        // 유저, 가게 조회
+        User user = userService.findByIdOrElseThrow(requestDto.getUserId());
+        Store store = storeService.findStoreByIdOrElseThrow(requestDto.getStoreId());
+
         // 주문 엔티티 생성
         Order order = Order.builder()
-                .user(requestDto.getUser())
-                .store(requestDto.getStore())
+                .user(user)
+                .store(store)
                 .price(requestDto.getPrice())
                 .requestedAt(requestDto.getRequestedAt())
                 .build();
@@ -53,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문 항목 저장
         for (OrderItemRequestDto itemDto : requestDto.getItems()) {
-            Menu menu = menuService.findMenuIncludeDeleted(itemDto.getMenu().getId());
+            Menu menu = menuService.findMenuIncludeDeleted(itemDto.getMenuId());
 
             OrderItem item = OrderItem.builder()
                     .order(order)
@@ -117,6 +124,11 @@ public class OrderServiceImpl implements OrderService {
      * @return 특정 유저의 주문 목록
      */
     public List<OrderResponseDto> findOrders(Long userId, Long currentUserId) {
+        // 로그인하지 않은 경우 예외 발생
+        if (currentUserId == null) {
+            throw new OrderException(OrderError.NOT_LOGGED_IN);
+        }
+
         // 현재 로그인한 유저 조회
         User currentUser = userService.findByIdOrElseThrow(currentUserId);
 

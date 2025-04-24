@@ -19,10 +19,10 @@ import java.util.List;
 public class CreateOrderRequestDto {
 
     @NotNull
-    private User user;
+    private Long userId;
 
     @NotNull
-    private Store store;
+    private Long storeId;
 
     @NotNull
     private List<OrderItemRequestDto> items;

@@ -15,7 +15,7 @@ import team.project.sos.domain.menu.entity.Menu;
 public class OrderItemRequestDto {
 
     @NotNull
-    private Menu menu;
+    private Long menuId;
 
     // TODO: MenuOption 추가
 
