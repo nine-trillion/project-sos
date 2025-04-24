@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 import team.project.sos.domain.user.enums.UserRole;
 
 import java.io.IOException;
@@ -20,34 +21,36 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtAuthFilter implements Filter {
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
     @Override
-    public void doFilter(
-            ServletRequest servletRequest,
-            ServletResponse servletResponse,
-            FilterChain filterChain
-    ) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
         String url = httpServletRequest.getRequestURI();
+        log.info("JwtAuthFilter url{}",url);
 
+        // "/api/auth"로 시작하는 요청은 jwt 검증을 건너뛰고 필터 체인 실행
         if (url.startsWith("/api/auth")) {
-            filterChain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
 
+        // Authorization 헤더에서 Bearer 토큰 추출
         String bearerJwt = httpServletRequest.getHeader("Authorization");
+        log.info("Authorization Header: {}",bearerJwt);
 
         if (bearerJwt == null) {
             httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 존재하지 않습니다.");
             return;
         }
 
-        String jwt = jwtProvider.substringToken(bearerJwt);
+        // Bearer 접두사를 제거한 JWT 추출
+        String jwt = jwtProvider.substringToken(bearerJwt).trim();
+        log.info("JWT: '{}'", jwt);
 
         try {
             Claims claims = jwtProvider.extractClaims(jwt);
@@ -59,12 +62,12 @@ public class JwtAuthFilter implements Filter {
             String userId = claims.getSubject();
 //            String email = claims.get("email",String.class);
             UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
-
+            log.info("claims: {}",claims);
             // 인증 객체 생성
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                userId,
+                    userId,
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_"+userRole))
+                    List.of(new SimpleGrantedAuthority("ROLE_" + userRole))
             );
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -73,6 +76,7 @@ public class JwtAuthFilter implements Filter {
             httpServletRequest.setAttribute("email", claims.get("email"));
             httpServletRequest.setAttribute("userRole", claims.get("userRole"));
 
+            log.info("다음 필터 호출");
             filterChain.doFilter(httpServletRequest, httpServletResponse);
 
         } catch (SecurityException | MalformedJwtException e) {
@@ -89,5 +93,6 @@ public class JwtAuthFilter implements Filter {
             httpServletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
         }
     }
+
 
 }
