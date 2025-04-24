@@ -1,6 +1,7 @@
 package team.project.sos.domain.order.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,7 @@ public class OrderController {
         // 토큰에서 로그인된 사용자 정보 꺼내기
         Long userId = Long.parseLong(currentUserId);
 
+
         orderService.cancelOrder(orderId, userId);
         return ResponseEntity.ok().build();
     }
@@ -53,10 +55,7 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
-    /**
-     * 관리자가 사용자의 주문 목록을 조회하기 위해 사용합니다.
-     * 일반 사용자는 접근 권한이 없습니다.
-     */
+
     @GetMapping("/users/{userId}/orders")
     public ResponseEntity<List<OrderResponseDto>> findOrders(@PathVariable Long userId,
                                                              @AuthenticationPrincipal String currentUserId) {

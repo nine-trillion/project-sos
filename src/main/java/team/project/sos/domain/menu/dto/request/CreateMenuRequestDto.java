@@ -23,4 +23,5 @@ public class CreateMenuRequestDto {
 
     // TODO: [임시] 권한 체크용 필드, 추후 삭제 예정
     private String role;
+    
 }

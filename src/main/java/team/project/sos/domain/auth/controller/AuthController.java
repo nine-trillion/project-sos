@@ -1,5 +1,6 @@
 package team.project.sos.domain.auth.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponseDto>> login(
-            @Valid @RequestBody LoginRequestDto loginRequestDto) {
+            @Valid @RequestBody LoginRequestDto loginRequestDto,
+            HttpServletResponse response) {
+
+        // 응답 헤더에 토큰 추가
         LoginResponseDto login = authService.login(loginRequestDto);
-        return ResponseEntity.ok().body(ApiResponse.of("로그인이 완료되었습니다.", login));
+        response.setHeader("Authorization", "Bearer " + login.getToken());
+
+        LoginResponseDto loginUser = authService.login(loginRequestDto);
+        return ResponseEntity.ok().body(ApiResponse.of("로그인이 완료되었습니다.", loginUser));
 
     }
 }

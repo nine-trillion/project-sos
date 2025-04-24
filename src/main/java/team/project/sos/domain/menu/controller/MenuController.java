@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.domain.menu.dto.request.CreateMenuRequestDto;
 import team.project.sos.domain.menu.dto.request.UpdateMenuRequestDto;
-import team.project.sos.domain.menu.dto.response.MenuResponse;
+import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 import team.project.sos.domain.menu.service.MenuService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/menus")
@@ -21,8 +23,8 @@ public class MenuController {
      * TODO: [권한] 현재 role을 요청 DTO로 받지만, 추후 인증 정보에서 권한 확인 예정, ❗❗❗️DTO파일도 수정 필요❗❗❗
      */
     @PostMapping
-    public ResponseEntity<MenuResponse> saveMenu(@RequestBody CreateMenuRequestDto requestDto) {
-        MenuResponse response = menuService.save(requestDto);
+    public ResponseEntity<MenuResponseDto> saveMenu(@RequestBody CreateMenuRequestDto requestDto) {
+        MenuResponseDto response = menuService.save(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -31,8 +33,8 @@ public class MenuController {
      * TODO: 실제 서비스에선 가게 조회 시 포함되므로, 이 엔드포인트는 테스트용으로만 사용
      */
     @GetMapping("/{menuId}")
-    public ResponseEntity<MenuResponse> findMenu(@PathVariable Long menuId) {
-        MenuResponse response = menuService.find(menuId);
+    public ResponseEntity<MenuResponseDto> findMenu(@PathVariable Long menuId) {
+        MenuResponseDto response = menuService.find(menuId);
         return ResponseEntity.ok(response);
     }
 
@@ -40,8 +42,8 @@ public class MenuController {
      * 메뉴 수정
      */
     @PatchMapping("/{menuId}")
-    public ResponseEntity<MenuResponse> updateMenu(@PathVariable Long menuId, @RequestBody UpdateMenuRequestDto requestDto) {
-        MenuResponse response = menuService.update(menuId, requestDto);
+    public ResponseEntity<MenuResponseDto> updateMenu(@PathVariable Long menuId, @RequestBody UpdateMenuRequestDto requestDto) {
+        MenuResponseDto response = menuService.update(menuId, requestDto);
         return ResponseEntity.ok(response);
     }
 
@@ -52,5 +54,16 @@ public class MenuController {
     public ResponseEntity<Void> removeMenu(@PathVariable Long menuId) {
         menuService.remove(menuId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 카테고리별 메뉴 조회
+     */
+    @GetMapping("/category")
+    public List<MenuResponseDto> getMenusByCategory(
+            @PathVariable Long storeId,
+            @RequestParam String category
+    ) {
+        return menuService.getMenusByStoreAndCategory(storeId, category);
     }
 }
