@@ -1,7 +1,9 @@
 package team.project.sos.domain.menu.exception;
 
-public class MenuException extends RuntimeException {
-    public MenuException(String message) {
-        super(message);
+import team.project.sos.common.excepion.BaseException;
+
+public class MenuException extends BaseException {
+    public MenuException(MenuError errorCode) {
+        super(errorCode);
     }
 }

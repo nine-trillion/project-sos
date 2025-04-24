@@ -6,6 +6,7 @@ import team.project.sos.domain.menu.dto.request.CreateMenuRequestDto;
 import team.project.sos.domain.menu.dto.request.UpdateMenuRequestDto;
 import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 import team.project.sos.domain.menu.entity.Menu;
+import team.project.sos.domain.menu.exception.MenuError;
 import team.project.sos.domain.menu.repository.MenuRepository;
 import team.project.sos.domain.menu.exception.MenuException;
 
@@ -22,7 +23,7 @@ public class MenuServiceImpl implements MenuService {
     // 추후 Security 적용 시, 인증 정보에서 사용자 권한을 확인하도록 변경 예정.
     private void checkOwnerRole(String role) {
         if (!"OWNER".equals(role)) {
-            throw new MenuException("사장님만 사용할 수 있는 기능입니다.");
+            throw new MenuException(MenuError.NO_PERMISSION);
         }
     }
 
@@ -62,11 +63,19 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Menu findByIdOrElseThrow(Long menuId) {
         return menuRepository.findById(menuId)
-                .orElseThrow(() -> new MenuException("메뉴가 존재하지 않습니다."));
+                .orElseThrow(() -> new MenuException(MenuError.MENU_NOT_FOUND));
     }
 
     @Override
     public List<MenuResponseDto> getMenusByStoreAndCategory(Long storeId, String category) {
+        return menuRepository.findAllByStoreIdAndCategoryAndIsDeletedFalse(storeId, category)
+                .stream()
+                .map(MenuResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MenuResponseDto> findMenusByCategory(Long storeId, String category) {
         return menuRepository.findAllByStoreIdAndCategoryAndIsDeletedFalse(storeId, category)
                 .stream()
                 .map(MenuResponseDto::from)
@@ -86,6 +95,6 @@ public class MenuServiceImpl implements MenuService {
     // 주문 내역 조회 시 삭제된 메뉴 포함 조회가 필요할 경우 사용하세요.
     public Menu findMenuIncludeDeleted(Long menuId) {
         return menuRepository.findById(menuId)
-                .orElseThrow(() -> new MenuException("메뉴가 존재하지 않습니다."));
+                .orElseThrow(() -> new MenuException(MenuError.MENU_NOT_FOUND));
     }
 }
