@@ -12,10 +12,10 @@ import team.project.sos.domain.auth.dto.response.SignUpResponseDto;
 import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
-import team.project.sos.domain.user.exception.UserError;
 import team.project.sos.domain.user.repository.UserRepository;
 import team.project.sos.domain.user.security.PasswordEncoder;
-import team.project.sos.domain.user.service.UserService;
+
+import java.util.Optional;
 
 import static team.project.sos.domain.auth.exception.AuthError.*;
 import static team.project.sos.domain.user.exception.UserError.*;
@@ -25,18 +25,22 @@ import static team.project.sos.domain.user.exception.UserError.*;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
     @Transactional
     @Override
     public SignUpResponseDto save(SignUpRequestDto requestDto, UserRole userRole) {
-
-        if (userRepository.existsByEmail(requestDto.getEmail())) {
+        Optional<User> exist = userRepository.findByEmail(requestDto.getEmail());
+        if (exist.isPresent()) {
+            User user = exist.get();
+            if (user.isDeleted()) {
+                // 탙퇴한 계정
+                throw new BaseException(USER_DEACTIVATED);
+            }
+            // 이메일 중복
             throw new BaseException(DUPLICATE_EMAIL);
         }
-
         if (userRepository.existsByPhoneNumber(requestDto.getPhoneNumber())) {
             throw new BaseException(DUPLICATE_PHONE_NUMBER);
         }
@@ -54,6 +58,9 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(
                 () -> new BaseException(USER_NOT_FOUND)
         );
+        if (user.isDeleted()) {
+            throw new BaseException(DEACTIVATED_ACCOUNT_LOGIN);
+        }
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new BaseException(INVALID_PASSWORD);
         }
