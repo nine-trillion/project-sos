@@ -20,6 +20,9 @@ public class StoreUpdateRequest {
     @NotNull(message = "영업 마감 시간은 필수 입력 값입니다.")
     private LocalTime closeTime;
 
+    @NotNull(message = "최소 주문 금액은 필수 입력 값입니다.")
+    private int minOrderPrice;
+
     @NotNull(message = "공지사항은 필수 항목입니다.") // 빈 문자열 허용
     @Size(max = 1000, message = "공지사항은 1000자를 초과할 수 없습니다.")
     private String notice;
