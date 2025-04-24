@@ -16,4 +16,5 @@ public interface MenuService {
     Menu findMenuIncludeDeleted(Long menuId);
     List<MenuResponseDto> getMenusByStore(Long storeId);
     List<MenuResponseDto> getMenusByStoreAndCategory(Long storeId, String category);
+    List<MenuResponseDto> findMenusByCategory(Long storeId, String category);
 }

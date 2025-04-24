@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "orders") // order가 SQL에서 예약어이므로 테이블명을 orders로 설정
 public class Order extends BaseTimeEntity {
 

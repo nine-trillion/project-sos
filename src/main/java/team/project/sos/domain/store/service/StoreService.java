@@ -23,4 +23,6 @@ public interface StoreService {
     List<StoreResponse> findStoresByOwner(Long ownerId);
 
     Store findStoreByIdOrElseThrow(Long storeId);
+
+
 }

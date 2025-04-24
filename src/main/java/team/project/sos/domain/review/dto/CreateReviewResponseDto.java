@@ -1,7 +1,12 @@
 package team.project.sos.domain.review.dto;
 
+import lombok.Builder;
 import lombok.Getter;
+import team.project.sos.domain.review.entity.Review;
 
+import java.time.LocalDateTime;
+
+@Builder
 @Getter
 public class CreateReviewResponseDto {
     private final Long storeId;
@@ -10,9 +15,23 @@ public class CreateReviewResponseDto {
 
     private final int rating;
 
-    public CreateReviewResponseDto(Long storeId, String content, int rating) {
-        this.storeId = storeId;
-        this.content = content;
-        this.rating = rating;
+    private final LocalDateTime createdAt;
+
+
+    public static CreateReviewResponseDto from(Review review) {
+            return CreateReviewResponseDto.builder()
+                    .storeId(review.getStore().getId())
+                    .content(review.getContent())
+                    .rating(review.getRating())
+                    .createdAt(review.getCreatedAt())
+                    .build();
     }
+
+    public static CreateReviewResponseDto of(Review review) {
+        return CreateReviewResponseDto.builder()
+                .content(review.getContent())
+                .rating(review.getRating())
+                .build();
+    }
+
 }
