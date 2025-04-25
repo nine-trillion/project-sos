@@ -1,6 +1,6 @@
 package team.project.sos.domain.dashboard.exception;
 
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 
 public class DashboardException extends BaseException {
 

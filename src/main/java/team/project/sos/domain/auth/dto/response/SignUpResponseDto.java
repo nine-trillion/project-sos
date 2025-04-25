@@ -61,16 +61,3 @@ public class SignUpResponseDto {
         );
     }
 }
-/**
- * {
- * "message": "회원가입이 완료되었습니다.",
- * "data": {
- * "user_id": 42,
- * "email": "example@domain.com",
- * "nickname": "김르탄",
- * "role": "USER",
- * "grade": "일반",
- * “created_at” :”…”
- * }
- * }
- */

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.sos.common.config.JwtProvider;
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 import team.project.sos.domain.auth.dto.request.LoginRequestDto;
 import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
 import team.project.sos.domain.auth.dto.response.LoginResponseDto;
