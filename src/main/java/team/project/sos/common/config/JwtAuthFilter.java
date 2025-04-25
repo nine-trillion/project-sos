@@ -64,7 +64,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 //            String email = claims.get("email",String.class);
             UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
             log.info("claims: {}",claims);
-            // 인증 객체 생성
+            // 인증 객체 생성 @
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     userId,
                     null,
@@ -72,10 +72,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-            httpServletRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
-            httpServletRequest.setAttribute("email", claims.get("email"));
-            httpServletRequest.setAttribute("userRole", claims.get("userRole"));
 
             log.info("다음 필터 호출");
             filterChain.doFilter(httpServletRequest, httpServletResponse);
