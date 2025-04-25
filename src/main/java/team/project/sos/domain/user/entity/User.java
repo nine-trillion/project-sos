@@ -65,4 +65,8 @@ public class User extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
     }
 
+    public void deleteUser(){
+        this.isDeleted = true;
+    }
+
 }

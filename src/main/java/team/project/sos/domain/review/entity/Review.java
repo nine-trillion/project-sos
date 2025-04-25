@@ -11,7 +11,7 @@ import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.user.entity.User;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 @Entity
 @Getter
@@ -33,7 +33,7 @@ public class Review extends BaseTimeEntity {
     private Store store;
 
     @OneToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
     @Min(1)
