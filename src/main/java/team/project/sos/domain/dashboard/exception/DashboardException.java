@@ -1,0 +1,10 @@
+package team.project.sos.domain.dashboard.exception;
+
+import team.project.sos.common.excepion.BaseException;
+
+public class DashboardException extends BaseException {
+
+    public DashboardException(DashboardError errorCode) {
+        super(errorCode);
+    }
+}
