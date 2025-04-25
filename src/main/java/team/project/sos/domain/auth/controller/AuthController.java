@@ -11,8 +11,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.common.response.ApiResponse;
 import team.project.sos.common.response.MessageResponse;
+import team.project.sos.domain.auth.dto.request.FindPasswordRequestDto;
 import team.project.sos.domain.auth.dto.request.LoginRequestDto;
 import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
+import team.project.sos.domain.auth.dto.response.FindPasswordResponseDto;
 import team.project.sos.domain.auth.dto.response.LoginResponseDto;
 import team.project.sos.domain.auth.dto.response.SignUpResponseDto;
 import team.project.sos.domain.auth.service.AuthService;
@@ -71,5 +73,13 @@ public class AuthController {
                 .build();
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body(msg);
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<ApiResponse<FindPasswordResponseDto>> findPassword(
+            @Valid @RequestBody FindPasswordRequestDto requestDto
+    ) {
+        FindPasswordResponseDto responseDto = userService.findPassword(requestDto);
+        return ResponseEntity.ok().body(ApiResponse.of("임시 비밀번호를 발급합니다.", responseDto));
     }
 }
