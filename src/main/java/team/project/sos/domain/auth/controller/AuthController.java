@@ -1,11 +1,11 @@
 package team.project.sos.domain.auth.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +17,14 @@ import team.project.sos.domain.auth.dto.response.LoginResponseDto;
 import team.project.sos.domain.auth.dto.response.SignUpResponseDto;
 import team.project.sos.domain.auth.service.AuthService;
 import team.project.sos.domain.user.enums.UserRole;
-import team.project.sos.domain.user.repository.UserRepository;
 import team.project.sos.domain.user.service.UserService;
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
-    private final UserRepository userRepository;
     private final UserService userService;
 
     // 일반 유저 회원가입
@@ -60,16 +59,21 @@ public class AuthController {
 
     @DeleteMapping
     public ResponseEntity<MessageResponse> deleteUser(
-            @CookieValue(required = true) String pwdConfirm,
-            HttpServletRequest request,
+            @CookieValue(name = "pwdConfirm", required = false) String pwdConfirm,
             @AuthenticationPrincipal String userIdStr
     ) {
-        Cookie[] cookie = request.getCookies();
-        if(!"OK".equalsIgnoreCase(cookie[0].getValue())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+        if (!"true".equalsIgnoreCase(pwdConfirm)) {
+            throw new IllegalArgumentException("비밀번호 확인이 필요합니다.");
         }
+
         Long userId = Long.parseLong(userIdStr);
-        MessageResponse msg =userService.delete(userId);
-        return ResponseEntity.ok().body(msg);
+        MessageResponse msg = userService.delete(userId);
+
+        ResponseCookie deleteCookie = ResponseCookie.from("pwdConfirm", "")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body(msg);
     }
 }
