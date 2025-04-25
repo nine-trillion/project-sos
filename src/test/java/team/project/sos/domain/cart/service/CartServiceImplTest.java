@@ -25,6 +25,7 @@ import team.project.sos.domain.user.service.UserService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,9 +57,7 @@ class CartServiceImplTest {
         User user = createMockUser();
         Menu menu = createMockMenu();
         Cart cart = new Cart(1L, user);
-
-        CartItemRequestDto requestDto = new CartItemRequestDto(cart.getId(), menu.getId(), 1);
-        List<CartItemRequestDto> requestDtos = List.of(requestDto);
+        List<CartItemRequestDto> requestDtos = createMockCartItemDtos();
 
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
@@ -76,7 +75,7 @@ class CartServiceImplTest {
         List<CartItemResponseDto> results = cartService.saveCartItems(requestDtos, user.getId());
 
         // then
-        assertThat(results).hasSize(1);
+        assertThat(results).hasSize(2);
         assertEquals(2, results.get(0).getQuantity());
         assertEquals(menu.getId(), results.get(0).getMenuId());
     }
@@ -100,12 +99,12 @@ class CartServiceImplTest {
         return Cart.builder().id(1L).user(user).build();
     }
 
-    private List<CartItem> createMockCartItems() {
+    private List<CartItemRequestDto> createMockCartItemDtos() {
         Cart cart = createMockCart();
         Menu menu = createMockMenu();
         CartItem cartItem1 = CartItem.builder().id(1L).cart(cart).menu(menu).quantity(1).build();
         CartItem cartItem2 = CartItem.builder().id(2L).cart(cart).menu(menu).quantity(2).build();
-        return List.of(cartItem1, cartItem2);
+        return Stream.of(cartItem1, cartItem2).map(CartItemRequestDto::from).toList();
     }
 
 }
