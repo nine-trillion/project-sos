@@ -4,6 +4,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
+/**
+ * 임시 비밀번호를 발급할 수 있습니다.
+ * 발급한 비밀번호로 암호화한 뒤에 비밀번호를 업데이트 합니다.
+ */
 @Component
 public class PasswordGenerator {
     int length = 8;
@@ -13,7 +17,7 @@ public class PasswordGenerator {
     private final String special = "!@#$";
     private final String all = upper + lower + numbers + special;
 
-    private final  Random random = new Random();
+    private final Random random = new Random();
 
     public String generateTempPassword() {
 

@@ -9,7 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 import team.project.sos.domain.auth.exception.AuthError;
 
 import java.io.IOException;

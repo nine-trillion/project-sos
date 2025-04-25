@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 import team.project.sos.domain.auth.exception.AuthError;
 import team.project.sos.domain.user.enums.UserRole;
 
@@ -28,7 +28,7 @@ import java.util.Date;
 public class JwtProvider {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_EXPIRATION = 1000 * 60 * 60; // 1시간
+    private static final long TOKEN_EXPIRATION = 1000L * 60 * 60; // 1시간
 
     @Value("${JWT_SECRET_KEY}")
     private String secretKey;
@@ -55,6 +55,8 @@ public class JwtProvider {
      */
     public String createToken(Long userId, String email, UserRole userRole) {
         Date date = new Date();
+        log.info(">>> JVM 기본 시간대: {}", java.util.TimeZone.getDefault().getID());
+        log.info(">>> 현재 시간: {}", new java.util.Date());
 
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))

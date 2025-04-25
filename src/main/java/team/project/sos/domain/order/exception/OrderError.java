@@ -3,7 +3,7 @@ package team.project.sos.domain.order.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import team.project.sos.common.excepion.ErrorCode;
+import team.project.sos.common.exception.ErrorCode;
 
 @Getter
 @AllArgsConstructor
