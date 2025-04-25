@@ -18,6 +18,7 @@ import team.project.sos.domain.review.repository.ReviewRepository;
 import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.store.service.StoreService;
 import team.project.sos.domain.user.entity.User;
+import team.project.sos.domain.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +42,9 @@ public class ReviewServiceImplTest {
 
     @Mock
     private StoreService storeService;
+
+    @Mock
+    private UserService userService;
 
     private Store createMockStore() {
         Store store = new Store();
@@ -109,15 +113,15 @@ public class ReviewServiceImplTest {
                 LocalDateTime.now().minusDays(6) // 2일 전 주문
         );
 
-        CreateReviewRequestDto dto = new CreateReviewRequestDto(1L, "맛있다.", 5);
+        CreateReviewRequestDto dto = new CreateReviewRequestDto("맛있다.", 5);
 
         // when
-        when(orderService.findByIdAndStoreIdOrElseThrow(anyLong(), anyLong()))
+        when(orderService. findByIdOrElseThrow(anyLong()))
                 .thenReturn(order);
 
         // then: review객체 반환
         assertThrows(ReviewException.class, () -> {
-            reviewService.saveReview(order.getId(), store.getId(), user, dto);
+            reviewService.saveReview(order.getId(), user.getId(), dto);
         });
     }
 
@@ -133,12 +137,12 @@ public class ReviewServiceImplTest {
                 15000,
                 LocalDateTime.now().minusDays(3) // 2일 전 주문
         );
-        CreateReviewRequestDto dto = new CreateReviewRequestDto(1L, "맛있다.", 5);
-        when(orderService.findByIdAndStoreIdOrElseThrow(anyLong(), anyLong()))
+        CreateReviewRequestDto dto = new CreateReviewRequestDto("맛있다.", 5);
+        when(orderService. findByIdOrElseThrow(anyLong()))
                 .thenReturn(order);
 
         //when
-        CreateReviewResponseDto result = reviewService.saveReview(order.getId(), store.getId(), user, dto);
+        CreateReviewResponseDto result = reviewService.saveReview(order.getId(), user.getId(), dto);
 
         //then
         assertNotNull(result);
@@ -174,19 +178,24 @@ public class ReviewServiceImplTest {
     @Test
     @DisplayName("리뷰 수정 성공")
     void 리뷰_수정_성공() {
+
         //given
         User owner = createMockUserWithId(1L);
         User notOwner = createMockUserWithId(2L);
+        int newRating = 4;
 
         Review review = new Review();
         ReflectionTestUtils.setField(review,"user", owner);
+        ReflectionTestUtils.setField(review, "id", 1L);
+        ReflectionTestUtils.setField(review, "store", createMockStore());
+        ReflectionTestUtils.setField(review, "order", createMockOrderWithId(1L));
 
         when(reviewRepository.findByOrderId(anyLong())).thenReturn(Optional.of(review));
+        when(userService.findByIdOrElseThrow(2L)).thenReturn(notOwner);
         //then
         assertThrows(ReviewException.class, () -> {
-            reviewService.updateReview(1L, "수정된 내용", notOwner);
+            reviewService.updateReview(1L, "수정된 내용", newRating, notOwner.getId());
         });
-
     }
 
     @Test
@@ -199,12 +208,15 @@ public class ReviewServiceImplTest {
         ReflectionTestUtils.setField(review,"user", owner);
         ReflectionTestUtils.setField(review,"order", createMockOrderWithId(1L));
         ReflectionTestUtils.setField(review, "id", 1L);
+        ReflectionTestUtils.setField(review, "store", createMockStore());
 
         when(reviewRepository.findByOrderId(anyLong()))
                 .thenReturn(Optional.of(review));
 
+        when(userService.findByIdOrElseThrow(2L)).thenReturn(notOwner);
+
         assertThrows(ReviewException.class, () -> {
-            reviewService.removeReview(notOwner, review.getId());
+            reviewService.removeReview(notOwner.getId(), review.getId());
         });
     }
 

@@ -9,12 +9,14 @@ import team.project.sos.domain.order.enums.OrderStatus;
 import team.project.sos.domain.order.service.OrderService;
 import team.project.sos.domain.review.dto.CreateReviewRequestDto;
 import team.project.sos.domain.review.dto.CreateReviewResponseDto;
+import team.project.sos.domain.review.dto.UpdateReviewResponseDto;
 import team.project.sos.domain.review.entity.Review;
 import team.project.sos.domain.review.exception.ReviewError;
 import team.project.sos.domain.review.exception.ReviewException;
 import team.project.sos.domain.review.repository.ReviewRepository;
 import team.project.sos.domain.store.service.StoreService;
 import team.project.sos.domain.user.entity.User;
+import team.project.sos.domain.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +33,14 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final StoreService storeService;
 
+    private final UserService userService;
+
     @Transactional
-    public CreateReviewResponseDto saveReview(Long orderId, Long storeId, User user, CreateReviewRequestDto createReviewRequestDto) {
+    public CreateReviewResponseDto saveReview(Long orderId, Long userId, CreateReviewRequestDto createReviewRequestDto) {
         // 주문 ID로 주문 조회
-        Order order = orderService.findByIdAndStoreIdOrElseThrow(orderId, storeId);
+        Order order = orderService.findByIdOrElseThrow(orderId);
+        User user = userService.findByIdOrElseThrow(userId);
+
 
         //주문 상태 확인 (배송 완료인지)
         if (order.getStatus() != OrderStatus.COMPLETED) {
@@ -73,7 +79,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Transactional
-    public CreateReviewResponseDto updateReview(Long orderId, String wishContent, User user) {
+    public UpdateReviewResponseDto updateReview(Long orderId, String newContent, int newRating, Long userId) {
+
+        User user = userService.findByIdOrElseThrow(userId);
 
         Review review = reviewRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ReviewException(ReviewError.REVIEW_NOT_FOUND));
@@ -84,12 +92,12 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         //리뷰 엔티티에 메서드 하나 만들어서 수정반영 되도록. update.
-        review.updateReview(wishContent);
-        return CreateReviewResponseDto.of(review);
-
+        review.updateReview(newContent, newRating);
+        return UpdateReviewResponseDto.of(review);
     }
 
-    public void removeReview(User user, Long orderId) {
+    public void removeReview(Long userId, Long orderId) {
+        User user = userService.findByIdOrElseThrow(userId);
         //리뷰가 없어요
         Review review = reviewRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ReviewException(ReviewError.REVIEW_NOT_FOUND));
@@ -101,5 +109,6 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.delete(review);
     }
+
 }
 

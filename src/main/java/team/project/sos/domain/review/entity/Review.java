@@ -32,19 +32,21 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
+    //주문 한번에 리뷰 1개
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
-    @Min(1)
-    @Max(5)
+    @Min(value = 1, message = "평점은 1점 이상이어야 합니다.")
+    @Max(value = 5, message = "평점은 5점 이하여야 합니다.")
     private int rating;
 
     @Column(nullable = false)
     private String content;
 
-
-    public void updateReview(String newContent) {
+    //도메인 객체의 상태를 바꾸는 책임은 도메인 자신이 갖는게 자연스럽다.
+    public void updateReview(String newContent, int newRating) {
         this.content = newContent;
+        this.rating = newRating;
     }
 }

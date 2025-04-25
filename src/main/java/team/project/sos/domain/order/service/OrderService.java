@@ -2,9 +2,6 @@ package team.project.sos.domain.order.service;
 
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
-import team.project.sos.domain.order.entity.Order;
-
-import java.util.List;
 
 import java.util.List;
 
