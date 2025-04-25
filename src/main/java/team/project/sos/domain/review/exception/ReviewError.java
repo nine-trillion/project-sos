@@ -12,9 +12,6 @@ public enum ReviewError implements ErrorCode {
 
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_001", "리뷰를 찾을 수 없습니다."),
     UNAUTHORIZED_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "REVIEW_002", "해당 리뷰에 대한 접근 권한이 없습니다."),
-    DUPLICATE_REVIEW(HttpStatus.CONFLICT, "REVIEW_003", "이미 리뷰를 작성한 주문입니다."),
-    INVALID_REVIEW_CONTENT(HttpStatus.BAD_REQUEST, "REVIEW_004", "리뷰 내용이 유효하지 않습니다."),
-    INVALID_REVIEW_RATING(HttpStatus.BAD_REQUEST, "REVIEW_005", "리뷰 평점은 1~5 사이여야 합니다."),
     ORDER_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "REVIEW_006", "배송이 완료된 주문만 리뷰를 작성할 수 있습니다.");
 
     private final HttpStatus status;

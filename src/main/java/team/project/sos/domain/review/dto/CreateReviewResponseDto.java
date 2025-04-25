@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class CreateReviewResponseDto {
-    private final Long storeId;
 
     private final String content;
 
@@ -17,24 +16,12 @@ public class CreateReviewResponseDto {
 
     private final LocalDateTime createdAt;
 
-    private final LocalDateTime updatedAt;
-
-
     public static CreateReviewResponseDto from(Review review) {
             return CreateReviewResponseDto.builder()
-                    .storeId(review.getStore().getId())
                     .content(review.getContent())
                     .rating(review.getRating())
                     .createdAt(review.getCreatedAt())
                     .build();
-    }
-
-    public static CreateReviewResponseDto of(Review review) {
-        return CreateReviewResponseDto.builder()
-                .content(review.getContent())
-                .rating(review.getRating())
-                .updatedAt(review.getUpdatedAt())
-                .build();
     }
 
 }
