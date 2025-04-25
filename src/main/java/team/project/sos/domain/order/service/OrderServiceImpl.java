@@ -175,6 +175,7 @@ public class OrderServiceImpl implements OrderService {
      * 주문 아이디를 받아서 주문을 반환합니다.
      * 해당하는 주문이 없을 시 예외를 발생시킵니다.
      */
+    @Override
     public Order findByIdOrElseThrow(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
     }
