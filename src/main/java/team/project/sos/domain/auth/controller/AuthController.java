@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     // 사장 회원가입
-    @PostMapping("/signup/owner")
+    @PostMapping("/owner/signup")
     public ResponseEntity<ApiResponse<SignUpResponseDto>> saveOwner(
             @Valid @RequestBody SignUpRequestDto signUpRequestDto) {
         SignUpResponseDto saveSignUp = authService.save(signUpRequestDto, UserRole.OWNER);
