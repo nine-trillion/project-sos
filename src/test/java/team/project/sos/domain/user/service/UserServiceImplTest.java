@@ -8,8 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 import team.project.sos.common.excepion.BaseException;
 import team.project.sos.common.response.MessageResponse;
+import team.project.sos.domain.auth.dto.request.FindPasswordRequestDto;
+import team.project.sos.domain.auth.dto.response.FindPasswordResponseDto;
 import team.project.sos.domain.user.dto.request.UserPasswordRequestDto;
 import team.project.sos.domain.user.dto.request.UserUpdateRequestDto;
 import team.project.sos.domain.user.dto.response.UserResponseDto;
@@ -18,13 +21,16 @@ import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
 import team.project.sos.domain.user.repository.UserRepository;
 import team.project.sos.domain.user.security.PasswordEncoder;
+import team.project.sos.domain.user.security.PasswordGenerator;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static team.project.sos.domain.auth.exception.AuthError.INVALID_PASSWORD;
+import static team.project.sos.domain.auth.exception.AuthError.LOGIN_FAILED;
 import static team.project.sos.domain.user.exception.UserError.DUPLICATE_PHONE_NUMBER;
 import static team.project.sos.domain.user.exception.UserError.USER_NOT_FOUND;
 
@@ -39,6 +45,9 @@ public class UserServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private PasswordGenerator passwordGenerator;
 
     private User user;
 
@@ -187,5 +196,53 @@ public class UserServiceImplTest {
                 .isEqualTo(USER_NOT_FOUND);
     }
 
+    @Test
+    @DisplayName("임시 비밀번호 발급")
+    void findPassword_success() {
+        //given
+        FindPasswordRequestDto requestDto = new FindPasswordRequestDto("test@abc.com", "010-1234-1234");
+
+        given(userRepository.findByPhoneNumber(requestDto.getPhoneNumber())).willReturn(Optional.of(user));
+        given(passwordGenerator.generateTempPassword()).willReturn("Password123!");
+        given(passwordEncoder.encode("Password123!")).willReturn("encodedPassword");
+
+        FindPasswordResponseDto responseDto = userService.findPassword(requestDto);
+        assertThat(responseDto.getPassword()).isEqualTo("Password123!");
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 실패 - 유저 없음")
+    void findPassword_userNotFound() {
+        // given
+        FindPasswordRequestDto requestDto = new FindPasswordRequestDto("test@abc.com", "010-1234-1234");
+
+        given(userRepository.findByPhoneNumber("010-1234-1234")).willReturn(Optional.empty());
+
+        // when & then
+        BaseException ex = assertThrows(
+                BaseException.class,
+                () -> userService.findPassword(requestDto)
+        );
+        assertThat(ex.getErrorCode())
+                .isEqualTo(USER_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 실패 - 이메일 불일치")
+    void findPassword_emailMismatch() {
+        // given
+        FindPasswordRequestDto requestDto = new FindPasswordRequestDto("wrong@example.com", "010-1234-5678");
+
+
+        when(userRepository.findByPhoneNumber("010-1234-5678")).thenReturn(Optional.of(user));
+
+        // when & then
+        BaseException ex = assertThrows(
+                BaseException.class,
+                () -> userService.findPassword(requestDto)
+        );
+        assertThat(ex.getErrorCode())
+                .isEqualTo(LOGIN_FAILED);
+    }
 
 }
