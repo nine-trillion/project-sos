@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         return LoginResponseDto.from(user, token);
     }
 
-    private Grade getGrade(UserRole userRole) {
+    public Grade getGrade(UserRole userRole) {
         return switch (userRole) {
             case ADMIN -> Grade.VIP;
             case USER, OWNER -> Grade.BASIC;
