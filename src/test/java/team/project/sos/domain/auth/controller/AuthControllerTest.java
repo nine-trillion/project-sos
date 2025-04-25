@@ -118,7 +118,7 @@ public class AuthControllerTest {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(post("/api/auth/signup/owner")
+        mockMvc.perform(post("/api/auth/owner/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())

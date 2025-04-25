@@ -48,10 +48,6 @@ public class AuthController {
             @Valid @RequestBody LoginRequestDto loginRequestDto,
             HttpServletResponse response) {
 
-        // 응답 헤더에 토큰 추가
-        LoginResponseDto login = authService.login(loginRequestDto);
-        response.setHeader("Authorization", "Bearer " + login.getToken());
-
         LoginResponseDto loginUser = authService.login(loginRequestDto);
         return ResponseEntity.ok().body(ApiResponse.of("로그인이 완료되었습니다.", loginUser));
 

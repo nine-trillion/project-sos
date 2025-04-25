@@ -5,6 +5,6 @@ public class SecurityConstants {
             "/api/auth/signup",
             "/api/auth/admin/signup",
             "/api/auth/login",
-            "/api/auth/signup/owner"
+            "/api/auth/owner/signup"
     };
 }
