@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 import team.project.sos.common.response.MessageResponse;
 import team.project.sos.domain.auth.dto.request.FindPasswordRequestDto;
 import team.project.sos.domain.auth.dto.response.FindPasswordResponseDto;
@@ -55,6 +55,13 @@ public class UserServiceImpl implements UserService {
         return UserResponseDto.from(findUser);
     }
 
+    /**
+     * 비밀번호 확인메서드
+     *
+     * @param userId
+     * @param requestDto
+     * @return
+     */
     @Override
     public MessageResponse verifyPassword(long userId, UserPasswordRequestDto requestDto) {
         User findUser = findByIdOrElseThrow(userId);
@@ -65,7 +72,12 @@ public class UserServiceImpl implements UserService {
         return new MessageResponse("비밀번호가 확인되었습니다");
     }
 
-
+    /**
+     * 회원 탈퇴 메서드
+     *
+     * @param userId
+     * @return
+     */
     @Override
     @Transactional
     public MessageResponse delete(Long userId) {
@@ -74,6 +86,12 @@ public class UserServiceImpl implements UserService {
         return new MessageResponse("탈퇴되었습니다.");
     }
 
+    /**
+     * 임시 비밀번호 발급 메서드
+     *
+     * @param requestDto
+     * @return
+     */
     @Override
     @Transactional
     public FindPasswordResponseDto findPassword(FindPasswordRequestDto requestDto) {
@@ -89,6 +107,7 @@ public class UserServiceImpl implements UserService {
 
         findUser.updatePassword(encodedTempPwd);
         userRepository.save(findUser);
+
         log.info("임시비밀번호(plain) = {}", tempPassword);
         log.info("암호화된 비밀번호 = {}", encodedTempPwd);
 
