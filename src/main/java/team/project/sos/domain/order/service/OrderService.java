@@ -20,4 +20,6 @@ public interface OrderService {
 
     List<OrderResponseDto> findMyOrders(Long userId);
 
+    Order findByIdOrElseThrow(Long orderId);
+
 }
