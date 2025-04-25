@@ -1,18 +1,20 @@
 package team.project.sos.domain.user.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.common.response.ApiResponse;
+import team.project.sos.common.response.MessageResponse;
 import team.project.sos.domain.user.dto.request.UserPasswordRequestDto;
 import team.project.sos.domain.user.dto.request.UserUpdateRequestDto;
 import team.project.sos.domain.user.dto.response.UserResponseDto;
 import team.project.sos.domain.user.service.UserService;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -44,18 +46,24 @@ public class UserController {
     }
 
 
-    //  비밀번호 확인 api 응답값은 그냥 메시지 주고 쿠키에 값을 넣어서 준다 ,,
-    @GetMapping("/password")
-    public ResponseEntity<String> verifyPassword(
+    @PostMapping("/password")
+    public ResponseEntity<MessageResponse> verifyPassword(
             @AuthenticationPrincipal String userIdStr,
             @Valid @RequestBody UserPasswordRequestDto requestDto,
             HttpServletResponse response
     ) {
         long userId = Long.parseLong(userIdStr);
-        userService.verifyPassword(userId,requestDto);
-        Cookie cookie = new Cookie("pwdConfirm","OK");
-        cookie.setMaxAge(300); // 유효시간 5분
-        response.addCookie(cookie);
-        return ResponseEntity.ok().body("비밀번호가 확인되었습니다");
+        MessageResponse msg = userService.verifyPassword(userId, requestDto);
+
+        ResponseCookie cookie = ResponseCookie.from("pwdConfirm", "true")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(300)
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+        log.info("cookie {}",response.getHeader(cookie.toString()));
+        return ResponseEntity.ok().body(msg);
     }
 }

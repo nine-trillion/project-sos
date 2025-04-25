@@ -16,8 +16,8 @@ public class UserUpdateRequestDto {
     )
     private String phoneNumber;
 
-//    public UserUpdateRequestDto(String nickName, String phoneNumber) {
-//        this.nickName = nickName;
-//        this.phoneNumber = phoneNumber;
-//    }
+    public UserUpdateRequestDto(String nickName, String phoneNumber) {
+        this.nickName = nickName;
+        this.phoneNumber = phoneNumber;
+    }
 }

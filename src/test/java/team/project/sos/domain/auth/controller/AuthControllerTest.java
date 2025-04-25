@@ -3,7 +3,6 @@ package team.project.sos.domain.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,11 +10,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import team.project.sos.common.config.JwtProvider;
 import team.project.sos.common.config.SecurityConfig;
-import team.project.sos.domain.auth.controller.AuthController;
 import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
 import team.project.sos.domain.auth.dto.response.SignUpResponseDto;
 import team.project.sos.domain.auth.service.AuthService;
@@ -26,12 +23,10 @@ import team.project.sos.domain.user.service.UserService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-//@SpringBootTest
 @WebMvcTest({AuthController.class, AdminAuthController.class})
 @AutoConfigureMockMvc
 @Import(SecurityConfig.class)
@@ -49,8 +44,10 @@ public class AuthControllerTest {
 
     @MockBean
     private UserService userService;
-    @MockBean           // ← 이 부분을 추가
+
+    @MockBean
     private UserRepository userRepository;
+
     @MockBean
     JwtProvider jwtProvider;
 
@@ -71,7 +68,6 @@ public class AuthControllerTest {
 
         // when & then
         mockMvc.perform(post("/api/auth/signup")
-                        //.with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())
@@ -105,6 +101,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data.role").value("ADMIN"));
 
     }
+
     @Test
     @DisplayName("OWNER 회원가입 성공")
     void signup_o_owner() throws Exception {
@@ -130,6 +127,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data.role").value("OWNER"));
 
     }
+
     @Test
     @DisplayName("비밀번호 형식이 잘못되었을 때 회원가입 실패")
     void signUp_x_PasswordInvalid() throws Exception {

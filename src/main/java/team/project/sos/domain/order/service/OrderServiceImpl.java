@@ -36,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 일반 유저가 주문을 하기 위해 사용합니다.
      */
+    @Override
     @Transactional
     public Long saveOrder(CreateOrderRequestDto requestDto, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
@@ -77,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 일반 유저가 자신의 주문을 취소하기 위해 사용합니다.
      */
+    @Override
     @Transactional
     public void cancelOrder(Long orderId, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
@@ -99,6 +101,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 일반 유저가 자신의 주문 단건을 조회하기 위해 사용합니다.
      */
+    @Override
     public OrderResponseDto findOrder(Long orderId, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
         if (currentUserId == null) {
@@ -123,6 +126,7 @@ public class OrderServiceImpl implements OrderService {
      * @param currentUserId 현재 로그인한 유저 아이디
      * @return 특정 유저의 주문 목록
      */
+    @Override
     public List<OrderResponseDto> findOrders(Long userId, Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
         if (currentUserId == null) {
@@ -144,12 +148,13 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByUser(user)
                 .stream()
                 .map(OrderResponseDto::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
      * 일반 유저가 자신의 주문 목록을 조회하기 위해 사용합니다.
      */
+    @Override
     public List<OrderResponseDto> findMyOrders(Long currentUserId) {
         // 로그인하지 않은 경우 예외 발생
         if (currentUserId == null) {
@@ -163,7 +168,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByUser(user)
                 .stream()
                 .map(OrderResponseDto::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -172,16 +177,6 @@ public class OrderServiceImpl implements OrderService {
      */
     public Order findByIdOrElseThrow(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
-    }
-
-    /**
-     * 주문 아이디와 가게 아이디를 받아서 주문을 반환합니다.
-     * 해당하는 주문이 없을 시 예외를 발생시킵니다.
-     */
-    public Order findByIdAndStoreIdOrElseThrow(Long orderId, Long storeId) {
-        return orderRepository.findById(orderId)
-                .filter(order -> order.getStore().getId().equals(storeId))
-                .orElseThrow(() -> new OrderException(OrderError.NO_SUCH_ORDER));
     }
 
 }

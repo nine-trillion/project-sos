@@ -4,14 +4,18 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import team.project.sos.common.config.BaseTimeEntity;
 import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
 import team.project.sos.domain.user.enums.Grade;
 import team.project.sos.domain.user.enums.UserRole;
 
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@SQLDelete(sql = "update user set is_deleted = 1 where id = ?") // 가게 삭제 시 폐업 처리
+@SQLRestriction("is_deleted = 0") //
 @Getter
 public class User extends BaseTimeEntity {
     @Id
@@ -37,7 +41,7 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Grade grade;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     public User(String email, String password, String nickname, String phoneNumber, UserRole role, Grade grade) {

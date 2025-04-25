@@ -15,7 +15,7 @@ public interface UserService {
 
     UserResponseDto updateUser(long userId, UserUpdateRequestDto requestDto);
 
-    void verifyPassword(long userId, UserPasswordRequestDto requestDto);
+    MessageResponse verifyPassword(long userId, UserPasswordRequestDto requestDto);
 
     MessageResponse delete(Long userId);
 }
