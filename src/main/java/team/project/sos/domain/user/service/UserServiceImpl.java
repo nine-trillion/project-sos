@@ -49,13 +49,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verifyPassword(long userId, UserPasswordRequestDto requestDto) {
+    public MessageResponse verifyPassword(long userId, UserPasswordRequestDto requestDto) {
         User findUser = findByIdOrElseThrow(userId);
 
         if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
             throw new BaseException(INVALID_PASSWORD);
         }
-
+        return new MessageResponse("비밀번호가 확인되었습니다");
     }
 
     @Transactional
