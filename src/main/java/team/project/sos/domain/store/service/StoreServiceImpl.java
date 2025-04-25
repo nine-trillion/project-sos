@@ -78,7 +78,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     /**
-     * 가게 단건 조회
+     * 가게 단건 조회 - 메뉴 포함
      *
      * @param storeId 가게 식별자
      * @return 조회된 가게 정보 및 가게의 메뉴 목록
@@ -89,6 +89,17 @@ public class StoreServiceImpl implements StoreService {
         List<MenuResponseDto> menus = menuService.getMenusByStore(storeId);
 
         return StoreDetailResponse.from(StoreResponse.from(store), menus);
+    }
+
+    /**
+     * 가게 단건 조회 - 가게 정보만 (대시보드용)
+     *
+     * @param storeId 가게 식별자
+     * @return 조회된 가게 정보
+     */
+    @Override
+    public StoreResponse findStore(Long storeId) {
+        return StoreResponse.from(findStoreByIdOrElseThrow(storeId));
     }
 
     /**

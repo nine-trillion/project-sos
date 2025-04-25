@@ -16,6 +16,8 @@ public interface StoreService {
 
     StoreDetailResponse findStoreWithMenu(Long storeId);
 
+    StoreResponse findStore(Long storeId);
+
     StoreResponse updateStore(Long loginId, Long storeId, String name, LocalTime openTime, LocalTime closeTime, int minOrderPrice, String notice);
 
     void removeStore(Long loginId, Long storeId);
