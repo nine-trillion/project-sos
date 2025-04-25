@@ -20,4 +20,9 @@ public class LoginRequestDto {
             message = "비밀번호는 8자 이상, 대소문자/숫자/특수문자를 각각 1자 이상 포함해야 합니다."
     )
     private String password;
+
+    public LoginRequestDto(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
