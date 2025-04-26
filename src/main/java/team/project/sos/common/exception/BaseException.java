@@ -1,4 +1,4 @@
-package team.project.sos.common.excepion;
+package team.project.sos.common.exception;
 
 import lombok.Getter;
 

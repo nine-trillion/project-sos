@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
 import team.project.sos.domain.order.entity.Order;

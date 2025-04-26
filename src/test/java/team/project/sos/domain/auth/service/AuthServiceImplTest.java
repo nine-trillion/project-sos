@@ -18,7 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import team.project.sos.common.config.JwtProvider;
-import team.project.sos.common.excepion.BaseException;
+import team.project.sos.common.exception.BaseException;
 import team.project.sos.domain.auth.dto.request.LoginRequestDto;
 import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
 import team.project.sos.domain.auth.dto.response.LoginResponseDto;
