@@ -18,16 +18,6 @@ import team.project.sos.domain.user.enums.UserRole;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * HTTP 요청에 포함된 JWT 토큰을 검증하고,
- * 해당 사용자의 인증 정보를 {@link SecurityContextHolder}에 등록하는 필터입니다.
- * <p>
- * Spring Security의 {@link OncePerRequestFilter}를 상속받아 요청 당 한 번만 실행되며,
- * 인증되지 않은 요청에 대해서는 예외를 발생시켜 차단합니다.
- * <p>
- * {@code /api/auth}로 시작하고, DELETE 메서드가 아닌 경우 JWT 검증을 건너뜁니다
- * 검증 실패 시 {@link HttpServletResponse}에 적절한 HTTP 상태 코드와 에러 메시지를 반환합니다.
- */
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,23 +25,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
-    /**
-     * JWT 필터의 메인 로직으로, 토큰 유효성 검사를 수행하고,
-     * 성공 시 인증 객체를 생성해 Spring Security 등록합니다.
-     *
-     * @param request     현재 요청
-     * @param response    응답 객체
-     * @param filterChain 필터 체인
-     * @throws ServletException 필터 체인 수행 중 발생한 예외
-     * @throws IOException      입출력 예외
-     */
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
         String url = httpServletRequest.getRequestURI();
-        log.info("JwtAuthFilter url{}", url);
+        log.info("JwtAuthFilter url{}",url);
 
         String method = httpServletRequest.getMethod();
         // "/api/auth"로 시작하는 요청은 jwt 검증을 건너뛰고 필터 체인 실행
@@ -62,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Authorization 헤더에서 Bearer 토큰 추출
         String bearerJwt = httpServletRequest.getHeader("Authorization");
-        log.info("Authorization Header: {}", bearerJwt);
+        log.info("Authorization Header: {}",bearerJwt);
 
         if (bearerJwt == null) {
             httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 존재하지 않습니다.");
@@ -81,10 +61,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             String userId = claims.getSubject();
+//            String email = claims.get("email",String.class);
             UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
-            log.info("claims: {}", claims);
+            log.info("claims: {}",claims);
+            // 인증 객체 생성 @
+            httpServletRequest.setAttribute("userId", Long.parseLong(userId));
 
-            // 인증 객체 생성
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     userId,
                     null,
