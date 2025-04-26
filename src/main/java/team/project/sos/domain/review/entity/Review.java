@@ -2,8 +2,6 @@ package team.project.sos.domain.review.entity;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.*;
 import team.project.sos.common.config.BaseTimeEntity;
 import team.project.sos.domain.order.entity.Order;
@@ -11,7 +9,7 @@ import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.user.entity.User;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Getter
@@ -37,8 +35,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
-    @Min(value = 1, message = "평점은 1점 이상이어야 합니다.")
-    @Max(value = 5, message = "평점은 5점 이하여야 합니다.")
+    @Column(nullable = false)
     private int rating;
 
     @Column(nullable = false)

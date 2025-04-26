@@ -7,9 +7,9 @@ import team.project.sos.domain.review.dto.UpdateReviewResponseDto;
 import java.util.List;
 
 public interface ReviewService  {
-    CreateReviewResponseDto saveReview(Long orderId,Long userId, CreateReviewRequestDto createReviewRequestDto);
-    List<CreateReviewResponseDto> findAllReviews(Long storeId);
-    UpdateReviewResponseDto updateReview(Long orderId, String newContent, int newRating, Long user);
-    void removeReview(Long user, Long orderId);
+    CreateReviewResponseDto saveReview(Long orderId, Long loggedInUserId, CreateReviewRequestDto createReviewRequestDto);
+    List<CreateReviewResponseDto> findReviewsByRating(Long storeId, int rating);
+    UpdateReviewResponseDto updateReview(Long orderId, Long loggedInUserId, String newContent, int newRating);
+    void removeReview(Long orderId,Long loggedInUserId);
 
 }

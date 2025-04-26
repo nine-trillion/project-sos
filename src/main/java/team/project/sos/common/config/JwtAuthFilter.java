@@ -65,6 +65,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
             log.info("claims: {}",claims);
             // 인증 객체 생성 @
+            httpServletRequest.setAttribute("userId", Long.parseLong(userId));
+
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     userId,
                     null,

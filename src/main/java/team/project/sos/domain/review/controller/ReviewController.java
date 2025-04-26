@@ -28,11 +28,12 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/stores/{storeId}/reviews")
-    public ResponseEntity<List<CreateReviewResponseDto>> findAllReviews(@PathVariable Long storeId) {
-
-        List<CreateReviewResponseDto> response = reviewService.findAllReviews(storeId);
-
+    @GetMapping("/stores/{storeId}/reviews/by-rating")
+    public ResponseEntity<List<CreateReviewResponseDto>> findReviewsByRating(
+            @PathVariable Long storeId,
+            @RequestParam int rating
+    ) {
+        List<CreateReviewResponseDto> response = reviewService.findReviewsByRating(storeId, rating);
         return ResponseEntity.ok(response);
     }
 
@@ -41,7 +42,7 @@ public class ReviewController {
             @PathVariable Long orderId,
             @RequestAttribute("userId") Long userId,
             @RequestBody @Valid UpdateReviewRequestDto dto) {
-        UpdateReviewResponseDto response = reviewService.updateReview(orderId, dto.getContent(), dto.getRating(), userId);
+        UpdateReviewResponseDto response = reviewService.updateReview(orderId, userId, dto.getContent(), dto.getRating());
         return ResponseEntity.ok(response);
     }
 
