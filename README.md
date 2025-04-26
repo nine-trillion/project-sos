@@ -6,34 +6,15 @@ Spring Boot와 JPA 기반으로 개발되었으며, RESTful API 아키텍처를 
 <br>
 
 ## 기술 스택
-
-### 언어 및 프레임워크
 - Java 17
 - Spring Boot 3.4.4
 - Spring Data JPA
 - Spring Validation
-
-### 데이터베이스
 - MySQL
-
-### ORM 및 쿼리 지원
-- JPA
 - QueryDSL 5.0.0
-
-### 인증 및 보안
 - JWT(Json Web Token) 기반 인증
 - BCrypt 비밀번호 암호화
-
-### 빌드 및 의존성 관리
 - Gradle
-- Spring Dependency Management Plugin
-
-### 테스트
-- JUnit 5
-- Mockito
-- AssertJ
-
-### 기타
 - Lombok
 
 <br>
@@ -70,62 +51,13 @@ team.project.sos
 │   ├── security
 ├── domain
 │   ├── auth
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── exception
-│   │   ├── service
 │   ├── cart
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── entity
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── service
 │   ├── dashboard
-│   │   ├── controller
-│   │   ├── dto.response
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── service
 │   ├── menu
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── entity
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── service
 │   ├── order
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── entity
-│   │   ├── enums
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── service
 │   ├── review
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── entity
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── service
 │   ├── store
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── entity
-│   │   ├── enums
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── service
 │   ├── user
-│   │   ├── controller
-│   │   ├── dto
-│   │   ├── entity
-│   │   ├── enums
-│   │   ├── exception
-│   │   ├── repository
-│   │   ├── security
-│   │   ├── service
 ```
 
 <br>
@@ -137,11 +69,11 @@ team.project.sos
 
 ## 기능 명세서
 
-#### ▶ [기능 명세서 - 사용자](docs/user.md)
-#### ▶ [기능 명세서 - 메뉴](docs/menu.md)
-#### ▶ [기능 명세서 - 주문/장바구니](docs/cart_order.md)
-#### ▶ [기능 명세서 - 가게/대시보드](docs/store_dashboard.md)
-#### ▶ [기능 명세서 - 리뷰](docs/review.md)
+📄 [**기능 명세서 - 사용자**](docs/user.md)  
+📄 [**기능 명세서 - 메뉴**](docs/menu.md)  
+📄 [**기능 명세서 - 주문/장바구니**](docs/cart_order.md)  
+📄 [**기능 명세서 - 가게/대시보드**](docs/store_dashboard.md)  
+📄 [**기능 명세서 - 리뷰**](docs/review.md)  
 
 <br>
 
