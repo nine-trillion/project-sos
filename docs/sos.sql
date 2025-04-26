@@ -67,8 +67,8 @@ CREATE TABLE cart_item
     FOREIGN KEY (menu_id) REFERENCES menu (id)
 );
 
--- Order 테이블
-CREATE TABLE `order`
+-- Orders 테이블
+CREATE TABLE orders
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id      BIGINT NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE order_item
     quantity   INT    NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES `order` (id),
+    FOREIGN KEY (order_id) REFERENCES orders (id),
     FOREIGN KEY (menu_id) REFERENCES menu (id)
 );
 
@@ -106,5 +106,5 @@ CREATE TABLE review
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (store_id) REFERENCES store (id),
-    FOREIGN KEY (order_id) REFERENCES `order` (id)
+    FOREIGN KEY (order_id) REFERENCES orders (id)
 );
