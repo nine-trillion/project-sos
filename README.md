@@ -69,11 +69,11 @@ team.project.sos
 
 ## 기능 명세서
 
-📄 [**기능 명세서 - 사용자**](docs/user.md)  
-📄 [**기능 명세서 - 메뉴**](docs/menu.md)  
-📄 [**기능 명세서 - 주문/장바구니**](docs/cart_order.md)  
-📄 [**기능 명세서 - 가게/대시보드**](docs/store_dashboard.md)  
-📄 [**기능 명세서 - 리뷰**](docs/review.md)  
+#### 📄 [**기능 명세서 - 사용자**](docs/user.md)
+#### 📄 [**기능 명세서 - 메뉴**](docs/menu.md)
+#### 📄 [**기능 명세서 - 주문/장바구니**](docs/cart_order.md)
+#### 📄 [**기능 명세서 - 가게/대시보드**](docs/store_dashboard.md)
+#### 📄 [**기능 명세서 - 리뷰**](docs/review.md)
 
 <br>
 
