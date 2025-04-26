@@ -28,7 +28,7 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/stores/{storeId}/reviews/by-rating")
+    @GetMapping("/stores/{storeId}/reviews/rating")
     public ResponseEntity<List<CreateReviewResponseDto>> findReviewsByRating(
             @PathVariable Long storeId,
             @RequestParam int rating

@@ -14,12 +14,18 @@ import team.project.sos.domain.review.entity.Review;
 import team.project.sos.domain.review.exception.ReviewError;
 import team.project.sos.domain.review.exception.ReviewException;
 import team.project.sos.domain.review.repository.ReviewRepository;
+import team.project.sos.domain.store.exception.StoreException;
 import team.project.sos.domain.store.service.StoreService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 리뷰 관련 비즈니스 로직을 담당하는 서비스 클래스입니다.
+ * <p>
+ * 리뷰 생성, 조회, 수정, 삭제 기능을 제공합니다.
+ */
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewServiceImpl implements ReviewService {
@@ -30,28 +36,32 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final StoreService storeService;
 
-
+    /**
+     * 주문에 대한 리뷰 생성
+     *
+     * @param orderId 주문 ID
+     * @param loggedInUserId 로그인한 사용자 ID
+     * @param createReviewRequestDto 리뷰 작성 요청 DTO
+     * @return 생성된 리뷰 응답 DTO
+     * @throws ReviewException 권한 없음, 주문 완료되지 않음 등의 경우
+     */
     @Transactional
     public CreateReviewResponseDto saveReview(Long orderId, Long loggedInUserId, CreateReviewRequestDto createReviewRequestDto) {
-        // 주문 ID로 주문 조회
+
         Order order = orderService.findByIdOrElseThrow(orderId);
 
-        //로그인한 유저Id와 일치하는지
         if (!order.getUser().getId().equals(loggedInUserId)) {
             throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
         }
 
-        //주문 상태 확인 (배송 완료인지)
         if (order.getStatus() != OrderStatus.COMPLETED) {
             throw new ReviewException(ReviewError.ORDER_NOT_COMPLETED);
         }
 
-        //배송이 5일 지나면 리뷰 작성이 불가능.
         if (order.getRequestedAt().isBefore(LocalDateTime.now().minusDays(5))) {
             throw new ReviewException(ReviewError.ORDER_NOT_COMPLETED);
         }
 
-        //리뷰에 필요한 필드만.
         Review review = Review.builder()
                 .content(createReviewRequestDto.getContent())
                 .rating(createReviewRequestDto.getRating())
@@ -59,11 +69,18 @@ public class ReviewServiceImpl implements ReviewService {
                 .store(order.getStore())
                 .build();
 
-        // Review 정적 팩토리 메서드로 생성
         reviewRepository.save(review);
         return CreateReviewResponseDto.from(review);
     }
 
+    /**
+     * 특정 가게의 평점별 리뷰 조회
+     *
+     * @param storeId 가게 ID
+     * @param rating 평점 (1~5)
+     * @return 평점에 해당하는 리뷰 리스트
+     * @throws StoreException 가게가 존재하지 않는 경우
+     */
     public List<CreateReviewResponseDto> findReviewsByRating(Long storeId, int rating) {
         storeService.findStoreByIdOrElseThrow(storeId);
 
@@ -73,12 +90,21 @@ public class ReviewServiceImpl implements ReviewService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 주문에 대한 리뷰 수정
+     *
+     * @param orderId 주문 ID
+     * @param loggedInUserId 로그인한 사용자 ID
+     * @param newContent 새로운 리뷰 내용
+     * @param newRating 새로운 평점
+     * @return 수정된 리뷰 응답 DTO
+     * @throws ReviewException 권한 없음, 리뷰 없음
+     */
     @Transactional
     public UpdateReviewResponseDto updateReview(Long orderId, Long loggedInUserId, String newContent, int newRating) {
 
         Order order = orderService.findByIdOrElseThrow(orderId);
 
-        //로그인한 유저Id와 일치하는지
         if (!order.getUser().getId().equals(loggedInUserId)) {
             throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
         }
@@ -86,11 +112,17 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ReviewException(ReviewError.REVIEW_NOT_FOUND));
 
-        //리뷰 엔티티에 메서드 하나 만들어서 수정반영 되도록. update.
         review.updateReview(newContent, newRating);
         return UpdateReviewResponseDto.of(review);
     }
 
+    /**
+     * 주문에 대한 리뷰 삭제
+     *
+     * @param orderId 주문 ID
+     * @param loggedInUserId 로그인한 사용자 ID
+     * @throws ReviewException 권한 없음, 리뷰 없음
+     */
     public void removeReview(Long orderId, Long loggedInUserId) {
 
         Order order = orderService.findByIdOrElseThrow(orderId);
@@ -98,12 +130,11 @@ public class ReviewServiceImpl implements ReviewService {
         if (!order.getUser().getId().equals(loggedInUserId)) {
             throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
         }
-        //리뷰가 없어요
+
         Review review = reviewRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ReviewException(ReviewError.REVIEW_NOT_FOUND));
 
         reviewRepository.delete(review);
     }
-
 }
 
