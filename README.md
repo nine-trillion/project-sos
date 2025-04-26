@@ -1,20 +1,40 @@
 # 🆘 배달 구조대
-본 프로젝트는 음식 주문 및 리뷰 서비스를 제공하는 백엔드 서버입니다.  
-회원가입과 로그인, 가게 및 메뉴 관리, 장바구니 기능, 주문 처리, 리뷰 작성 및 관리 기능을 제공합니다.  
-사장은 매출 및 고객 통계를 조회할 수 있는 대시보드 기능을 사용할 수 있습니다.  
-Spring Boot와 JPA를 기반으로 개발되었으며, RESTful API 아키텍처를 준수합니다.
+본 프로젝트는 음식 주문 및 리뷰 서비스를 제공하는 백엔드 서버로,  
+회원, 가게, 메뉴, 장바구니, 주문, 리뷰 기능과 사장용 대시보드 기능을 포함하고 있습니다.  
+Spring Boot와 JPA 기반으로 개발되었으며, RESTful API 아키텍처를 준수합니다.  
 
 <br>
 
 ## 기술 스택
-- Java 17 
-- Spring Boot 3.4.4 
-- Spring Data JPA, QueryDSL 
-- Spring Security, JWT 인증 
-- MySQL 
-- Gradle 
-- Lombok 
-- JUnit 5, Mockito, AssertJ
+
+### 언어 및 프레임워크
+- Java 17
+- Spring Boot 3.4.4
+- Spring Data JPA
+- Spring Validation
+
+### 데이터베이스
+- MySQL
+
+### ORM 및 쿼리 지원
+- JPA
+- QueryDSL 5.0.0
+
+### 인증 및 보안
+- JWT(Json Web Token) 기반 인증
+- BCrypt 비밀번호 암호화
+
+### 빌드 및 의존성 관리
+- Gradle
+- Spring Dependency Management Plugin
+
+### 테스트
+- JUnit 5
+- Mockito
+- AssertJ
+
+### 기타
+- Lombok
 
 <br>
 
@@ -117,11 +137,11 @@ team.project.sos
 
 ## 기능 명세서
 
-### ▶ [기능 명세서 - 사용자](docs/user.md)
-### ▶ [기능 명세서 - 메뉴](docs/menu.md)
-### ▶ [기능 명세서 - 주문/장바구니](docs/cart_order.md)
-### ▶ [기능 명세서 - 가게/대시보드](docs/store_dashboard.md)
-### ▶ [기능 명세서 - 리뷰](docs/review.md)
+#### ▶ [기능 명세서 - 사용자](docs/user.md)
+#### ▶ [기능 명세서 - 메뉴](docs/menu.md)
+#### ▶ [기능 명세서 - 주문/장바구니](docs/cart_order.md)
+#### ▶ [기능 명세서 - 가게/대시보드](docs/store_dashboard.md)
+#### ▶ [기능 명세서 - 리뷰](docs/review.md)
 
 <br>
 
