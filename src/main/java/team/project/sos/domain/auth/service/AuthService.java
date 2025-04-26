@@ -1,7 +1,6 @@
 package team.project.sos.domain.auth.service;
 
 
-import jakarta.validation.Valid;
 import team.project.sos.domain.auth.dto.request.LoginRequestDto;
 import team.project.sos.domain.auth.dto.request.SignUpRequestDto;
 import team.project.sos.domain.auth.dto.response.LoginResponseDto;

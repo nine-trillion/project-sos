@@ -58,8 +58,6 @@ public class ReviewServiceImplTest {
         ReflectionTestUtils.setField(user, "id", 1L);
         ReflectionTestUtils.setField(user, "nickname", "Sos");
         ReflectionTestUtils.setField(user, "email", "sos@example.com");
-        ReflectionTestUtils.setField(user, "password", "password");
-        ReflectionTestUtils.setField(user, "phoneNumber", "1234567890");
         return user;
     }
 
@@ -74,16 +72,20 @@ public class ReviewServiceImplTest {
         return order;
     }
 
-    private Review createMockReview() {
-        Review review = new Review();
+    private Review createMockReview(User user, Store store, Order order) {
+        Review review = Review.builder()
+                .content("테스트 리뷰 내용")
+                .rating(5)
+                .order(order)
+                .store(store)
+                .build();
+        ReflectionTestUtils.setField(review, "order", order);
+        ReflectionTestUtils.setField(review, "user", order.getUser());
         ReflectionTestUtils.setField(review, "id", 1L);
-        ReflectionTestUtils.setField(review, "user", createMockUser());
-        ReflectionTestUtils.setField(review, "store", createMockStore());
-        ReflectionTestUtils.setField(review, "createdAt", LocalDateTime.now());
-        ReflectionTestUtils.setField(review, "updatedAt", LocalDateTime.now());
+        ReflectionTestUtils.setField(review, "user", user);
         return review;
-
     }
+
     //로그인한 유저를 찾기위해 필요.
     private User createMockUserWithId(Long id) {
         User user = new User();
@@ -152,22 +154,31 @@ public class ReviewServiceImplTest {
     @Test
     @DisplayName("리뷰 조회 성공")
     void 리뷰_조회_성공() {
+        int rating = 3;
+
         Store store = createMockStore();
+        User user = createMockUser();
+        Order order = createMockOrder(
+                user,
+                store,
+                OrderStatus.COMPLETED,
+                15000,
+                LocalDateTime.now().minusDays(3) // 2일 전 주문
+        );
 
         //재료를 생각한다고 보면 편함. 테스트 하기 전에, 테스트에서 반환될 건 뭘까..
-        Review review = createMockReview();
-        Review review2 = createMockReview();
+        Review review = createMockReview(user,store,order);
+        Review review2 = createMockReview(user,store,order);
         List<Review> mockReviews = List.of(review, review2);
 
         when(storeService.findStoreByIdOrElseThrow(store.getId()))
                 .thenReturn(store);
 
         //mock동작과정
-        when(reviewRepository.findAllByOrderStoreIdOrderByCreatedAtDesc(store.getId()))
+        when(reviewRepository.findAllByOrderStoreIdAndRatingOrderByCreatedAtDesc(store.getId(),rating))
                 .thenReturn(mockReviews);
-
         //when
-        List<CreateReviewResponseDto> result = reviewService.findAllReviews(store.getId());
+        List<CreateReviewResponseDto> result = reviewService.findReviewsByRating(store.getId(), rating);
 
         //then
         assertNotNull(result);
@@ -181,43 +192,39 @@ public class ReviewServiceImplTest {
 
         //given
         User owner = createMockUserWithId(1L);
-        User notOwner = createMockUserWithId(2L);
-        int newRating = 4;
+        Store store = createMockStore();
+        Order order = createMockOrder(owner, store, OrderStatus.COMPLETED, 15000, LocalDateTime.now());
+        Review review = createMockReview(owner, store, order);
 
-        Review review = new Review();
-        ReflectionTestUtils.setField(review,"user", owner);
-        ReflectionTestUtils.setField(review, "id", 1L);
-        ReflectionTestUtils.setField(review, "store", createMockStore());
-        ReflectionTestUtils.setField(review, "order", createMockOrderWithId(1L));
+        when(orderService.findByIdOrElseThrow(anyLong())).thenReturn(order);
 
         when(reviewRepository.findByOrderId(anyLong())).thenReturn(Optional.of(review));
-        when(userService.findByIdOrElseThrow(2L)).thenReturn(notOwner);
+
+        var result = reviewService.updateReview(order.getId(), owner.getId(), "맛없음", 5);
+
         //then
-        assertThrows(ReviewException.class, () -> {
-            reviewService.updateReview(1L, "수정된 내용", newRating, notOwner.getId());
-        });
+        assertNotNull(result);
+        assertEquals("맛없음", result.getContent());
+        assertEquals(5, review.getRating());
+
     }
 
     @Test
     @DisplayName("리뷰 삭제 성공")
     void 리뷰_삭제_성공() {
-        User owner = createMockUserWithId(1L); // 리뷰 작성자
-        User notOwner = createMockUserWithId(2L); // 로그인한 유저
+        //given
+        User owner = createMockUserWithId(1L);
+        Store store = createMockStore();
+        Order order = createMockOrder(owner, store, OrderStatus.COMPLETED, 15000, LocalDateTime.now());
+        Review review = createMockReview(owner, store, order);
 
-        Review review = new Review();
-        ReflectionTestUtils.setField(review,"user", owner);
-        ReflectionTestUtils.setField(review,"order", createMockOrderWithId(1L));
-        ReflectionTestUtils.setField(review, "id", 1L);
-        ReflectionTestUtils.setField(review, "store", createMockStore());
+        when(orderService.findByIdOrElseThrow(anyLong())).thenReturn(order);
 
-        when(reviewRepository.findByOrderId(anyLong()))
-                .thenReturn(Optional.of(review));
+        when(reviewRepository.findByOrderId(anyLong())).thenReturn(Optional.of(review));
 
-        when(userService.findByIdOrElseThrow(2L)).thenReturn(notOwner);
+        reviewService.removeReview(order.getId(), owner.getId());
 
-        assertThrows(ReviewException.class, () -> {
-            reviewService.removeReview(notOwner.getId(), review.getId());
-        });
+
     }
 
 }

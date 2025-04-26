@@ -14,10 +14,13 @@ public class CreateReviewResponseDto {
 
     private final int rating;
 
+    private final Long storeId;
+
     private final LocalDateTime createdAt;
 
     public static CreateReviewResponseDto from(Review review) {
             return CreateReviewResponseDto.builder()
+                    .storeId(review.getStore().getId())
                     .content(review.getContent())
                     .rating(review.getRating())
                     .createdAt(review.getCreatedAt())

@@ -1,7 +1,7 @@
 package team.project.sos.domain.review.exception;
 
-import team.project.sos.common.excepion.BaseException;
-import team.project.sos.common.excepion.ErrorCode;
+import team.project.sos.common.exception.BaseException;
+import team.project.sos.common.exception.ErrorCode;
 
 public class ReviewException extends BaseException {
 

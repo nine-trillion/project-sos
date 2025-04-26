@@ -1,7 +1,7 @@
 package team.project.sos.domain.cart.exception;
 
-import team.project.sos.common.excepion.BaseException;
-import team.project.sos.common.excepion.ErrorCode;
+import team.project.sos.common.exception.BaseException;
+import team.project.sos.common.exception.ErrorCode;
 
 public class CartException extends BaseException {
 

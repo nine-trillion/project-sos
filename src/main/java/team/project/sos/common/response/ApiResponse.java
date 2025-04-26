@@ -2,6 +2,15 @@ package team.project.sos.common.response;
 
 import lombok.Getter;
 
+/**
+ * 공통 응답 포맷
+ * ex)
+ * {
+ * "message" : "",
+ * "data" : {...}
+ * }
+ * @param <T>
+ */
 @Getter
 public class ApiResponse<T> {
 

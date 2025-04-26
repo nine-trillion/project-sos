@@ -15,13 +15,10 @@ import team.project.sos.domain.review.exception.ReviewError;
 import team.project.sos.domain.review.exception.ReviewException;
 import team.project.sos.domain.review.repository.ReviewRepository;
 import team.project.sos.domain.store.service.StoreService;
-import team.project.sos.domain.user.entity.User;
-import team.project.sos.domain.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,14 +30,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final StoreService storeService;
 
-    private final UserService userService;
 
     @Transactional
-    public CreateReviewResponseDto saveReview(Long orderId, Long userId, CreateReviewRequestDto createReviewRequestDto) {
+    public CreateReviewResponseDto saveReview(Long orderId, Long loggedInUserId, CreateReviewRequestDto createReviewRequestDto) {
         // 주문 ID로 주문 조회
         Order order = orderService.findByIdOrElseThrow(orderId);
-        User user = userService.findByIdOrElseThrow(userId);
 
+        //로그인한 유저Id와 일치하는지
+        if (!order.getUser().getId().equals(loggedInUserId)) {
+            throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
+        }
 
         //주문 상태 확인 (배송 완료인지)
         if (order.getStatus() != OrderStatus.COMPLETED) {
@@ -56,7 +55,6 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = Review.builder()
                 .content(createReviewRequestDto.getContent())
                 .rating(createReviewRequestDto.getRating())
-                .user(user)
                 .order(order)
                 .store(order.getStore())
                 .build();
@@ -66,46 +64,43 @@ public class ReviewServiceImpl implements ReviewService {
         return CreateReviewResponseDto.from(review);
     }
 
-    public List<CreateReviewResponseDto> findAllReviews(Long storeId) {
-        //가게가 없음.
+    public List<CreateReviewResponseDto> findReviewsByRating(Long storeId, int rating) {
         storeService.findStoreByIdOrElseThrow(storeId);
 
-        //특정 가게 기준 최신순 다건 조회. 별점 범위로 필터링.
-        //이거 해결. createdAt으로 다건 조회 어떻게 하는지. findAllByOrderStoreIdOrderByCreatedAtDesc로하면 알아서 해줌.
-        return reviewRepository.findAllByOrderStoreIdOrderByCreatedAtDesc(storeId)
+        return reviewRepository.findAllByOrderStoreIdAndRatingOrderByCreatedAtDesc(storeId, rating)
                 .stream()
                 .map(CreateReviewResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public UpdateReviewResponseDto updateReview(Long orderId, String newContent, int newRating, Long userId) {
+    public UpdateReviewResponseDto updateReview(Long orderId, Long loggedInUserId, String newContent, int newRating) {
 
-        User user = userService.findByIdOrElseThrow(userId);
+        Order order = orderService.findByIdOrElseThrow(orderId);
+
+        //로그인한 유저Id와 일치하는지
+        if (!order.getUser().getId().equals(loggedInUserId)) {
+            throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
+        }
 
         Review review = reviewRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ReviewException(ReviewError.REVIEW_NOT_FOUND));
-
-        //수정권한 예외처리 사용자 본인인지.
-        if (!review.getUser().getId().equals(user.getId())) {
-            throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
-        }
 
         //리뷰 엔티티에 메서드 하나 만들어서 수정반영 되도록. update.
         review.updateReview(newContent, newRating);
         return UpdateReviewResponseDto.of(review);
     }
 
-    public void removeReview(Long userId, Long orderId) {
-        User user = userService.findByIdOrElseThrow(userId);
+    public void removeReview(Long orderId, Long loggedInUserId) {
+
+        Order order = orderService.findByIdOrElseThrow(orderId);
+
+        if (!order.getUser().getId().equals(loggedInUserId)) {
+            throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
+        }
         //리뷰가 없어요
         Review review = reviewRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ReviewException(ReviewError.REVIEW_NOT_FOUND));
-
-        //삭제권한 예외처리
-        if (!review.getUser().getId().equals(user.getId())) {
-            throw new ReviewException(ReviewError.UNAUTHORIZED_REVIEW_ACCESS);
-        }
 
         reviewRepository.delete(review);
     }
