@@ -83,8 +83,6 @@
     - OWNER가 아닌 사용자가 삭제 시도할 경우: `StoreException(StoreError.UNAUTHORIZED_STORE_OWNER)`
     - 가게를 찾을 수 없는 경우: `StoreException(StoreError.NOT_FOUND_STORE)`
 
----
-
 ## 5. 대시보드 조회
 
 ### 5.1 가게별 대시보드 조회
