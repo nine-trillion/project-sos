@@ -63,4 +63,12 @@ public class MenuController {
     public List<MenuResponseDto> getMenusByCategory(@PathVariable Long storeId, @PathVariable String category) {
         return menuService.findMenusByCategory(storeId, category);
     }
+
+    /**
+     * 가게 메뉴 조회
+     */
+    @GetMapping("/store/{storeId}")
+    public List<MenuResponseDto> getMenusByStore(@PathVariable Long storeId) {
+        return menuService.getMenusByStore(storeId);
+    }
 }
