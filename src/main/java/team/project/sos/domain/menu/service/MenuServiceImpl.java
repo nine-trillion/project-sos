@@ -2,13 +2,15 @@ package team.project.sos.domain.menu.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.project.sos.domain.menu.dto.request.CreateMenuRequestDto;
 import team.project.sos.domain.menu.dto.request.UpdateMenuRequestDto;
 import team.project.sos.domain.menu.dto.response.MenuResponseDto;
 import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.menu.exception.MenuError;
-import team.project.sos.domain.menu.repository.MenuRepository;
 import team.project.sos.domain.menu.exception.MenuException;
+import team.project.sos.domain.menu.repository.MenuRepository;
+import team.project.sos.domain.store.validator.StoreValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,24 +20,19 @@ import java.util.stream.Collectors;
 public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
-
-    // TODO: [권한 체크] 현재는 임시 role 파라미터 사용.
-    // 추후 Security 적용 시, 인증 정보에서 사용자 권한을 확인하도록 변경 예정.
-    private void checkOwnerRole(String role) {
-        if (!"OWNER".equals(role)) {
-            throw new MenuException(MenuError.NO_PERMISSION);
-        }
-    }
+    private final StoreValidator storeValidator;
 
     @Override
-    public MenuResponseDto save(CreateMenuRequestDto requestDto) {
-        checkOwnerRole(requestDto.getRole());  // 임시 권한 체크
+    public MenuResponseDto save(Long loginId, CreateMenuRequestDto requestDto) {
+        storeValidator.validateOwner(loginId, requestDto.getStoreId());
+
         Menu menu = new Menu(
                 requestDto.getStoreId(),
                 requestDto.getName(),
                 requestDto.getPrice(),
                 requestDto.getCategory()
         );
+
         return MenuResponseDto.from(menuRepository.save(menu));
     }
 
@@ -45,18 +42,22 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuResponseDto update(Long menuId, UpdateMenuRequestDto requestDto) {
-        checkOwnerRole(requestDto.getRole());  // 임시 권한 체크
+    @Transactional
+    public MenuResponseDto update(Long loginId, Long menuId, UpdateMenuRequestDto requestDto) {
         Menu menu = findByIdOrElseThrow(menuId);
+        storeValidator.validateOwner(loginId, menu.getStoreId());
+
         menu.update(requestDto.getName(), requestDto.getPrice(), requestDto.getCategory());
+
         return MenuResponseDto.from(menu);
     }
 
     @Override
-    public void remove(Long menuId) {
-        // TODO: [권한 체크] 삭제 기능에도 동일하게 적용
-        checkOwnerRole("OWNER");  // 임시 값, 추후 수정
+    @Transactional
+    public void remove(Long loginId, Long menuId) {
         Menu menu = findByIdOrElseThrow(menuId);
+        storeValidator.validateOwner(loginId, menu.getStoreId());
+
         menu.delete();
     }
 

@@ -3,6 +3,7 @@ package team.project.sos.domain.menu.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.domain.menu.dto.request.CreateMenuRequestDto;
 import team.project.sos.domain.menu.dto.request.UpdateMenuRequestDto;
@@ -20,11 +21,13 @@ public class MenuController {
 
     /**
      * 메뉴 생성
-     * TODO: [권한] 현재 role을 요청 DTO로 받지만, 추후 인증 정보에서 권한 확인 예정, ❗❗❗️DTO파일도 수정 필요❗❗❗
      */
     @PostMapping
-    public ResponseEntity<MenuResponseDto> saveMenu(@RequestBody CreateMenuRequestDto requestDto) {
-        MenuResponseDto response = menuService.save(requestDto);
+    public ResponseEntity<MenuResponseDto> saveMenu(@RequestBody CreateMenuRequestDto requestDto,
+                                                    @AuthenticationPrincipal String userId) {
+        Long loginId = Long.parseLong(userId);
+        MenuResponseDto response = menuService.save(loginId, requestDto);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -42,8 +45,12 @@ public class MenuController {
      * 메뉴 수정
      */
     @PatchMapping("/{menuId}")
-    public ResponseEntity<MenuResponseDto> updateMenu(@PathVariable Long menuId, @RequestBody UpdateMenuRequestDto requestDto) {
-        MenuResponseDto response = menuService.update(menuId, requestDto);
+    public ResponseEntity<MenuResponseDto> updateMenu(@PathVariable Long menuId,
+                                                      @RequestBody UpdateMenuRequestDto requestDto,
+                                                      @AuthenticationPrincipal String userId) {
+        Long loginId = Long.parseLong(userId);
+        MenuResponseDto response = menuService.update(loginId, menuId, requestDto);
+
         return ResponseEntity.ok(response);
     }
 
@@ -51,8 +58,11 @@ public class MenuController {
      * 메뉴 삭제 (Soft Delete)
      */
     @DeleteMapping("/{menuId}")
-    public ResponseEntity<Void> removeMenu(@PathVariable Long menuId) {
-        menuService.remove(menuId);
+    public ResponseEntity<Void> removeMenu(@PathVariable Long menuId,
+                                           @AuthenticationPrincipal String userId) {
+        Long loginId = Long.parseLong(userId);
+        menuService.remove(loginId, menuId);
+
         return ResponseEntity.noContent().build();
     }
 
