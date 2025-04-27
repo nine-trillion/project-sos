@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.domain.cart.dto.request.CartItemRequestDto;
-import team.project.sos.domain.cart.dto.request.CreateCartItemsRequestDto;
 import team.project.sos.domain.cart.dto.request.UpdateCartItemRequestDto;
 import team.project.sos.domain.cart.dto.response.CartItemResponseDto;
 import team.project.sos.domain.cart.service.CartService;
@@ -21,7 +20,7 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping("/cart")
-    public ResponseEntity<List<CartItemResponseDto>> saveCartItems(List<CartItemRequestDto> requestDtos,
+    public ResponseEntity<List<CartItemResponseDto>> saveCartItems(@RequestBody List<CartItemRequestDto> requestDtos,
                                                                    @AuthenticationPrincipal String currentUserIdStr) {
         Long currentUserId = Long.parseLong(currentUserIdStr);
 

@@ -21,7 +21,4 @@ public class UpdateMenuRequestDto {
 
     @NotBlank(message = "카테고리를 입력하세요.")
     private String category;
-
-    // TODO: [임시] 권한 체크용 필드, 추후 삭제 예정
-    private String role;
 }

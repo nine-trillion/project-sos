@@ -10,18 +10,19 @@ import team.project.sos.domain.order.dto.request.OrderItemRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
 import team.project.sos.domain.order.entity.Order;
 import team.project.sos.domain.order.entity.OrderItem;
+import team.project.sos.domain.order.enums.OrderStatus;
 import team.project.sos.domain.order.exception.OrderError;
 import team.project.sos.domain.order.exception.OrderException;
 import team.project.sos.domain.order.repository.OrderItemRepository;
 import team.project.sos.domain.order.repository.OrderRepository;
 import team.project.sos.domain.store.entity.Store;
 import team.project.sos.domain.store.service.StoreService;
+import team.project.sos.domain.store.validator.StoreValidator;
 import team.project.sos.domain.user.entity.User;
 import team.project.sos.domain.user.enums.UserRole;
 import team.project.sos.domain.user.service.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserService userService;
     private final MenuService menuService;
     private final StoreService storeService;
+    private final StoreValidator storeValidator;
 
     /**
      * 일반 유저가 주문을 하기 위해 사용합니다.
@@ -96,6 +98,28 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문 상태를 '취소'로 변경
         order.cancel();
+    }
+
+    /**
+     * 주문 상태 변경
+     */
+    @Override
+    @Transactional
+    public OrderResponseDto updateOrderStatus(Long storeId, Long orderId, Long currentUserId, OrderStatus status) {
+        // 로그인하지 않은 경우 예외 발생
+        if (currentUserId == null) {
+            throw new OrderException(OrderError.NOT_LOGGED_IN);
+        }
+
+        // 로그인한 사용자가 가게 사장인지 확인
+        storeValidator.validateOwner(currentUserId, storeId);
+
+        // 해당하는 주문 조회
+        Order order = findByIdOrElseThrow(orderId);
+
+        order.updateStatus(status);
+
+        return OrderResponseDto.from(order);
     }
 
     /**

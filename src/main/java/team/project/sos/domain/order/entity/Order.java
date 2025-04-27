@@ -71,4 +71,15 @@ public class Order extends BaseTimeEntity {
         this.status = OrderStatus.CANCELLED;
     }
 
+    public void updateStatus(OrderStatus status) {
+        // 이미 취소된 주문인 경우 예외 발생
+        if (this.status == OrderStatus.CANCELLED) {
+            throw new OrderException(OrderError.ALREADY_CANCELLED);
+        }
+        // 이미 완료된 주문인 경우 예외 발생
+        if (this.status == OrderStatus.COMPLETED) {
+            throw new OrderException(OrderError.ALREADY_COMPLETED);
+        }
+        this.status = status;
+    }
 }

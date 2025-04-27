@@ -60,7 +60,7 @@ public class DataInitializer implements CommandLineRunner {
         // 사용자 10명 생성 (3명은 OWNER)
         for (int i = 1; i <= 10; i++) {
             String email = "user" + i + "@test.com";
-            String password = passwordEncoder.encode("test1234!");
+            String password = passwordEncoder.encode("Password1@");
             String nickname = "User" + i;
             String phone = "010-0000-00" + i;
             UserRole role = (i <= 3) ? UserRole.OWNER : UserRole.USER;

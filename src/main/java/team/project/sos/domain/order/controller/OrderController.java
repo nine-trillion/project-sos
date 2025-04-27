@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
+import team.project.sos.domain.order.dto.request.UpdateStatusRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
 import team.project.sos.domain.order.service.OrderService;
 
@@ -33,14 +34,25 @@ public class OrderController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PatchMapping("/stores/{storeId}/orders/{orderId}")
+    public ResponseEntity<OrderResponseDto> updateOrderStatus(@PathVariable Long orderId,
+                                                              @PathVariable Long storeId,
+                                                              @AuthenticationPrincipal String currentUserIdStr,
+                                                              @RequestBody UpdateStatusRequestDto requestDto) {
+        // 토큰에서 로그인된 사용자 정보 꺼내기
+        Long currentUserId = Long.parseLong(currentUserIdStr);
+        OrderResponseDto response = orderService.updateOrderStatus(storeId, orderId, currentUserId, requestDto.getStatus());
+
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/orders/{orderId}")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId,
                                             @AuthenticationPrincipal String currentUserIdStr) {
         // 토큰에서 로그인된 사용자 정보 꺼내기
         Long currentUserId = Long.parseLong(currentUserIdStr);
-
-
         orderService.cancelOrder(orderId, currentUserId);
+
         return ResponseEntity.ok().build();
     }
 
