@@ -77,4 +77,6 @@ team.project.sos
 
 <br>
 
-## API 명세서
+## API 명세서 및 실행 예시
+
+#### 📄 [postman documentation](https://documenter.getpostman.com/view/43185152/2sB2j1gs7w)
