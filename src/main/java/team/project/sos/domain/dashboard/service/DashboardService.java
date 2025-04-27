@@ -42,7 +42,7 @@ public class DashboardService {
 
         LocalDateTime start = getStartDateTime(date, month);
         LocalDateTime end = getEndDateTime(date, month);
-        String basis = getBasis(month);
+        String basis = getBasis(date, month);
 
         return dashboardRepository.getStoreDashboard(storeId, start, end, basis);
     }
@@ -57,7 +57,7 @@ public class DashboardService {
 
         LocalDateTime start = getStartDateTime(date, month);
         LocalDateTime end = getEndDateTime(date, month);
-        String basis = getBasis(month);
+        String basis = getBasis(date, month);
 
         return dashboardRepository.getOwnerDashboard(ownerId, start, end, basis);
     }
@@ -79,7 +79,7 @@ public class DashboardService {
         return date != null ? date.atTime(LocalTime.MAX) : month.atEndOfMonth().atTime(LocalTime.MAX);
     }
 
-    private String getBasis(YearMonth month) {
-        return month != null ? "MONTH" : "DATE";
+    private String getBasis(LocalDate date, YearMonth month) {
+        return date != null ? String.valueOf(date) : String.valueOf(month);
     }
 }
