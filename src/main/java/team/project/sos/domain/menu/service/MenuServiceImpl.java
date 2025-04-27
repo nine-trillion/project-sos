@@ -1,5 +1,6 @@
 package team.project.sos.domain.menu.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import team.project.sos.domain.menu.dto.request.CreateMenuRequestDto;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
