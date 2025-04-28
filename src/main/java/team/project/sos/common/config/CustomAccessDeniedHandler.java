@@ -8,6 +8,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+import team.project.sos.common.exception.BaseException;
+import team.project.sos.domain.auth.exception.AuthError;
 
 import java.io.IOException;
 
@@ -42,6 +44,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
-        resolver.resolveException(request, response, null, accessDeniedException);
+        resolver.resolveException(request, response, null, new BaseException(AuthError.FORBIDDEN_ACCESS));
     }
 }
