@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         findUser.updatePassword(encodedTempPwd);
         userRepository.save(findUser);
 
-        log.info("임시비밀번호(plain) = {}", tempPassword);
+        log.info("임시 비밀번호 = {}", tempPassword);
         log.info("암호화된 비밀번호 = {}", encodedTempPwd);
 
         return new FindPasswordResponseDto(tempPassword);
