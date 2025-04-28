@@ -65,6 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = Review.builder()
                 .content(createReviewRequestDto.getContent())
                 .rating(createReviewRequestDto.getRating())
+                .user(order.getUser())
                 .order(order)
                 .store(order.getStore())
                 .build();

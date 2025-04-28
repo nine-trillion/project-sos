@@ -3,6 +3,7 @@ package team.project.sos.domain.order.service;
 import team.project.sos.domain.order.dto.request.CreateOrderRequestDto;
 import team.project.sos.domain.order.dto.response.OrderResponseDto;
 import team.project.sos.domain.order.entity.Order;
+import team.project.sos.domain.order.enums.OrderStatus;
 
 import java.util.List;
 
@@ -20,4 +21,5 @@ public interface OrderService {
 
     Order findByIdOrElseThrow(Long orderId);
 
+    OrderResponseDto updateOrderStatus(Long storeId, Long orderId, Long currentUserId, OrderStatus status);
 }

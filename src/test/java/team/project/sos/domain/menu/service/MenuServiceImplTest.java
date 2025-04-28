@@ -13,11 +13,14 @@ import team.project.sos.domain.menu.entity.Menu;
 import team.project.sos.domain.menu.exception.MenuError;
 import team.project.sos.domain.menu.exception.MenuException;
 import team.project.sos.domain.menu.repository.MenuRepository;
+import team.project.sos.domain.store.validator.StoreValidator;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +32,9 @@ class MenuServiceImplTest {
     @Mock
     private MenuRepository menuRepository;
 
+    @Mock
+    private StoreValidator storeValidator;
+
     @Test
     @DisplayName("메뉴 생성 성공")
     void saveMenuSuccess() {
@@ -38,35 +44,19 @@ class MenuServiceImplTest {
                 .name("비빔밥")
                 .price(9000)
                 .category("한식")
-                .role("OWNER")
                 .build();
+
+        doNothing().when(storeValidator).validateOwner(anyLong(), anyLong());
 
         Menu savedMenu = new Menu(1L, "비빔밥", 9000, "한식");
         when(menuRepository.save(any(Menu.class))).thenReturn(savedMenu);
 
         // when
-        MenuResponseDto responseDto = menuService.save(requestDto);
+        MenuResponseDto responseDto = menuService.save(1L, requestDto);
 
         // then
         assertNotNull(responseDto);
         assertEquals("비빔밥", responseDto.getName());
-    }
-
-    @Test
-    @DisplayName("메뉴 생성 실패 - 권한 없음")
-    void saveMenuFail_NoPermission() {
-        // given
-        CreateMenuRequestDto requestDto = CreateMenuRequestDto.builder()
-                .storeId(1L)
-                .name("비빔밥")
-                .price(9000)
-                .category("한식")
-                .role("USER")  // 사장님 권한 아님
-                .build();
-
-        // when & then
-        MenuException exception = assertThrows(MenuException.class, () -> menuService.save(requestDto));
-        assertEquals(MenuError.NO_PERMISSION, exception.getErrorCode());
     }
 
     @Test
@@ -99,6 +89,8 @@ class MenuServiceImplTest {
     @DisplayName("메뉴 수정 성공")
     void updateMenuSuccess() {
         // given
+        doNothing().when(storeValidator).validateOwner(anyLong(), anyLong());
+
         Menu menu = new Menu(1L, "김치찌개", 8000, "한식");
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
 
@@ -106,11 +98,10 @@ class MenuServiceImplTest {
                 .name("순두부찌개")
                 .price(8500)
                 .category("한식")
-                .role("OWNER")
                 .build();
 
         // when
-        MenuResponseDto responseDto = menuService.update(1L, updateDto);
+        MenuResponseDto responseDto = menuService.update(1L, 1L, updateDto);
 
         // then
         assertEquals("순두부찌개", responseDto.getName());
@@ -121,11 +112,13 @@ class MenuServiceImplTest {
     @DisplayName("메뉴 삭제 성공")
     void removeMenuSuccess() {
         // given
+        doNothing().when(storeValidator).validateOwner(anyLong(), anyLong());
+
         Menu menu = new Menu(1L, "비빔밥", 9000, "한식");
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
 
         // when
-        menuService.remove(1L);
+        menuService.remove(1L, 1L);
 
         // then
         assertTrue(menu.isDeleted());
