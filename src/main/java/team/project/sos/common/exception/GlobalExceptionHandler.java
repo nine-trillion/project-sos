@@ -2,7 +2,6 @@ package team.project.sos.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -41,6 +40,7 @@ public class GlobalExceptionHandler {
                         .message(message)
                         .build());
     }
+
     /**
      * 메뉴 관련 예외 처리
      */
@@ -51,17 +51,6 @@ public class GlobalExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST.value())
                         .code("MENU_ERROR")
                         .message(e.getMessage())
-                        .build());
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponse> handleAccessDenied(AccessDeniedException ex) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        return ResponseEntity.status(status.value())
-                .body(ExceptionResponse.builder()
-                        .status(status.value())
-                        .code("FORBIDDEN_ACCESS")
-                        .message("접근 권한이 없습니다.")
                         .build());
     }
 

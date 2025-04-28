@@ -3,7 +3,6 @@ package team.project.sos.domain.user.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +18,6 @@ import team.project.sos.domain.user.service.UserService;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -28,7 +26,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> findUser(
             @AuthenticationPrincipal String userIdStr
     ) {
-        log.info("유저 조회 {}", "UserController");
         long userId = Long.parseLong(userIdStr);
         UserResponseDto findUser = userService.findUser(userId);
         return ResponseEntity.ok().body(ApiResponse.of("유저 정보를 조회합니다.", findUser));
@@ -39,7 +36,6 @@ public class UserController {
             @AuthenticationPrincipal String userIdStr,
             @Valid @RequestBody UserUpdateRequestDto requestDto
     ) {
-        log.info("정보 수정 UserController:{}", "/api/user");
         long userId = Long.parseLong(userIdStr);
         UserResponseDto updateUser = userService.updateUser(userId, requestDto);
         return ResponseEntity.ok().body(ApiResponse.of("유저 정보를 수정합니다.", updateUser));
@@ -63,7 +59,6 @@ public class UserController {
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-        log.info("cookie {}",response.getHeader(cookie.toString()));
         return ResponseEntity.ok().body(msg);
     }
 }
