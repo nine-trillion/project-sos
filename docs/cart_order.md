@@ -133,3 +133,21 @@
 - **예외 처리**:
     - 로그인하지 않은 경우: `OrderException(OrderError.NOT_LOGGED_IN)`
     - 다른 사용자의 주문 취소 시도: `OrderException(OrderError.NO_PERMISSION)`
+
+## 8. 주문 상태 변경
+
+### 8.1 주문 상태 변경
+
+- **설명**: 사용자(OWNER)가 본인 가게의 주문 상태를 변경할 수 있다.
+- **요청 데이터**:
+  - 주문 ID
+  - 가게 ID
+  - 주문 상태 (`COOKING, DELIVERING, COMPLETED, CANCELLED`)
+- **처리 로직**:
+  1. 로그인 여부 확인
+  2. 로그인한 사용자가 해당 가게의 사장인지 확인
+  3. 주문 조회
+  4. 주문 상태 변경
+- **예외 처리**:
+  - 로그인하지 않은 경우: `OrderException(OrderError.NOT_LOGGED_IN)`
+  - 다른 사용자 가게의 주문 상태 변경 시도: `StoreException(StoreError.UNAUTHORIZED_STORE_OWNER)`
